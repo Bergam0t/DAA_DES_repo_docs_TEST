@@ -138,10 +138,10 @@ Getting the simulation running via the interface is straightforward:
 While you interact with the simple web page, Streamlit coordinates several actions behind the scenes when you click "Run Simulation":
 
 1.  **Input Gathering:** Streamlit reads the current values from all the widgets (sliders, number inputs, etc.) you configured on the `setup.py` page. These values are stored in Streamlit's session state.
-2.  **Function Call:** The `model.py` script retrieves these parameters from the session state and passes them to the appropriate backend function, typically from `des_parallel_process.py` ([Simulation Runner & Parallelization](07_simulation_runner___parallelization__.qmd)).
+2.  **Function Call:** The `model.py` script retrieves these parameters from the session state and passes them to the appropriate backend function, typically from `des_parallel_process.py` ([Simulation Runner & Parallelization](07_simulation_runner___parallelization_.qmd)).
 3.  **Simulation Execution:** The backend function runs the core [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd), simulating patient arrivals, resource allocation, and outcomes based on the parameters.
 4.  **Results Generation:** The simulation engine outputs raw data, usually saving it to CSV files (like `run_results.csv`).
-5.  **Data Processing & Display:** The `model.py` script then uses functions (often from `visualisation` scripts or covered in [Results Processing & Visualization](08_results_processing___visualization__.qmd)) to read these CSV files, calculate summary statistics, and create plots.
+5.  **Data Processing & Display:** The `model.py` script then uses functions (often from `visualisation` scripts or covered in [Results Processing & Visualization](08_results_processing___visualization_.qmd)) to read these CSV files, calculate summary statistics, and create plots.
 6.  **Update Interface:** Finally, Streamlit updates the web page to display these metrics and charts in the results tabs.
 
 Here's a simplified diagram of the flow:

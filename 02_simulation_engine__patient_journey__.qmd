@@ -24,7 +24,7 @@ The Simulation Engine, primarily implemented in the `des_hems.py` file, handles 
     *   **Travel to Hospital:** Time taken to transport the patient (if needed).
     *   **Handover:** Time spent handing the patient over to hospital staff.
     *   **Clear:** Time taken to become available for the next call (e.g., returning to base, refuelling).
-5.  **Recording Events:** Throughout this journey, the engine logs every important event and timestamp. This data is crucial for later analysis ([Results Processing & Visualization](08_results_processing___visualization__.qmd)).
+5.  **Recording Events:** Throughout this journey, the engine logs every important event and timestamp. This data is crucial for later analysis ([Results Processing & Visualization](08_results_processing___visualization_.qmd)).
 
 **A Patient's Journey: An Example**
 
@@ -129,7 +129,7 @@ The core logic resides mainly in `des_hems.py`. We use a Python library called `
                 self.hems_resources.return_resource(hems_res, ...)
                 self.add_patient_result_row(patient, hems_res.callsign, "resource_use_end")
     ```
-    Again, `yield self.env.timeout(...)` makes the simulation clock move forward. The `self.add_patient_result_row(...)` function logs what happened and when, building up the data needed for [Results Processing & Visualization](08_results_processing___visualization__.qmd). The `finally` block ensures the resource is always returned.
+    Again, `yield self.env.timeout(...)` makes the simulation clock move forward. The `self.add_patient_result_row(...)` function logs what happened and when, building up the data needed for [Results Processing & Visualization](08_results_processing___visualization_.qmd). The `finally` block ensures the resource is always returned.
 
 **How it Fits Together**
 

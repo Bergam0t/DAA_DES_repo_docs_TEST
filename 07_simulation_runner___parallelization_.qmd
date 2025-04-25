@@ -252,7 +252,7 @@ Crucially, it supports **parallelization**, using `joblib` to run many replicati
 
 Now that we have this combined dataset containing results from potentially many simulation runs, how do we make sense of it all? How do we calculate key metrics and create informative charts? That's the focus of our final chapter.
 
-**Next:** [Chapter 8: Results Processing & Visualization](08_results_processing___visualization__.qmd)
+**Next:** [Chapter 8: Results Processing & Visualization](08_results_processing___visualization_.qmd)
 
 ---
 

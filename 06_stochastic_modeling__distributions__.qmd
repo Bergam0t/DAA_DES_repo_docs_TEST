@@ -222,7 +222,7 @@ The `distribution_fit_utils.py` script performs the initial analysis of historic
 
 So far, we've seen the interface, the engine directing the flow, the patient and resource entities, how resources are managed, and how randomness is introduced. But how do we actually *run* the simulation, potentially multiple times to account for this randomness, and do it efficiently? That's the focus of the next chapter.
 
-**Next:** [Chapter 7: Simulation Runner & Parallelization](07_simulation_runner___parallelization__.qmd)
+**Next:** [Chapter 7: Simulation Runner & Parallelization](07_simulation_runner___parallelization_.qmd)
 
 ---
 
