@@ -7,6 +7,7 @@ In [Chapter 5: Resource Management (Availability & Allocation)](05_resource_mana
 Imagine we set the simulation so that mobilisation *always* takes exactly 5 minutes, flying to the scene *always* takes 12 minutes, and time on scene is *always* 25 minutes. This might be easy to program, but it's not realistic!
 
 In reality:
+
 *   Sometimes crews mobilise faster, sometimes slower.
 *   Flight times depend on wind, exact location, and air traffic.
 *   Time on scene varies hugely depending on the patient's condition and the complexity of the incident.

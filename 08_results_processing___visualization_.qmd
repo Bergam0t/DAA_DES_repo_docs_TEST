@@ -7,6 +7,7 @@ But what do we *do* with this big file? It contains thousands, maybe millions, o
 **What Problem Does This Solve? The Need for Insights**
 
 Imagine you're a manager who just received a massive spreadsheet listing every single sale made last year – every item, every customer, every timestamp. Useful data, perhaps, but overwhelming! What you really need is a report summarizing:
+
 *   Total sales this year vs. last year.
 *   Average sale value.
 *   Busiest sales hours.
