@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>simulation_runner___parallelization_ – HEMS Simulation Documentation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ddd961a2510921635943dfbbd19534c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">HEMS Simulation Documentation</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-components" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Components</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-components">    
+        <li>
+    <a class="dropdown-item" href="./01_web_application_interface__streamlit__.html">
+ <span class="dropdown-text">Web Application Interface (Streamlit)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./02_simulation_engine__patient_journey__.html">
+ <span class="dropdown-text">Simulation Engine (Patient Journey)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./03_patient_entity_.html">
+ <span class="dropdown-text">Patient Entity</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./04_hems_resource_entity_.html">
+ <span class="dropdown-text">HEMS Resource Entity</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./05_resource_management__availability___allocation__.html">
+ <span class="dropdown-text">Resource Management (Availability &amp; Allocation)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./06_stochastic_modeling__distributions__.html">
+ <span class="dropdown-text">Stochastic Modeling (Distributions)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./07_simulation_runner___parallelization_.html">
+ <span class="dropdown-text">Simulation Runner &amp; Parallelization</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./08_results_processing___visualization_.html">
+ <span class="dropdown-text">Results Processing &amp; Visualization</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#chapter-7-simulation-runner-parallelization" id="toc-chapter-7-simulation-runner-parallelization" class="nav-link active" data-scroll-target="#chapter-7-simulation-runner-parallelization">Chapter 7: Simulation Runner &amp; Parallelization</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+
+
+
+
+<section id="chapter-7-simulation-runner-parallelization" class="level1">
+<h1>Chapter 7: Simulation Runner &amp; Parallelization</h1>
+<p>In <a href="./06_stochastic_modeling__distributions__.html">Chapter 6: Stochastic Modeling (Distributions)</a>, we learned how the simulation uses randomness (like rolling dice based on real data) to make things like activity times and patient arrivals realistic. But because of this randomness, running the simulation just <em>once</em> might give us an unusual result – maybe by pure chance, things went really smoothly, or maybe everything went wrong!</p>
+<p>How can we be confident in the results? We need to run the simulation <em>many</em> times. But running a complex simulation hundreds of times could take hours or even days! This chapter introduces the <strong>Simulation Runner</strong>, the part of our project that handles actually executing the simulation, and its powerful feature: <strong>Parallelization</strong>, which helps us run multiple simulations much faster.</p>
+<p><strong>What Problem Does This Solve?</strong></p>
+<p>Imagine you want to test the effect of adding a new response car. You run the simulation once for one simulated year. The result shows an average response time of 15 minutes. Is that good? Bad? Lucky? Unlucky? You don’t know from a single run.</p>
+<p>To get a reliable answer, you need to run the simulation many times (say, 30 times) with the same settings. Each run is called a <strong>replication</strong>. By looking at the results across all 30 replications, you can calculate a trustworthy average response time and see how much it varied (the range of possible outcomes).</p>
+<p>But running 30 year-long simulations one after another would be very slow. This is where the Simulation Runner and Parallelization come in:</p>
+<ol type="1">
+<li><strong>Manages Execution:</strong> It provides functions to start and run the <a href="./02_simulation_engine__patient_journey__.html">Simulation Engine (Patient Journey)</a>.</li>
+<li><strong>Handles Replications:</strong> It allows you to easily specify <em>how many</em> times you want to run the simulation.</li>
+<li><strong>Speeds Things Up (Parallelization):</strong> It uses the power of modern computers (which often have multiple processing units or “cores”) to run several replications <em>at the same time</em>, drastically reducing the total waiting time.</li>
+<li><strong>Gathers Results:</strong> After all the runs are finished, it collects the results from each individual replication and combines them into a single dataset ready for analysis.</li>
+</ol>
+<p><strong>Analogy: Playing Many Games at Once</strong></p>
+<p>Think of our simulation as a complex board game representing the HEMS service.</p>
+<ul>
+<li><strong>Single Run:</strong> Playing the game once to see the outcome.</li>
+<li><strong>Multiple Replications:</strong> Playing the game 30 times, writing down the score each time. This gives you a better idea of the average score and the highest/lowest possible scores.</li>
+<li><strong>Simulation Runner:</strong> The person (or program) responsible for setting up the board, playing the game according to the rules, and recording the score.</li>
+<li><strong>Parallelization:</strong> Instead of playing one game at a time, imagine having a room full of identical game boards and players. You tell them all to start playing simultaneously. If you have 4 sets of players, you can finish 4 games in the time it used to take to finish one! The Simulation Runner acts like the coordinator, starting all the games and collecting the scores when they’re done.</li>
+</ul>
+<p><strong>How You Use It (via the Web App)</strong></p>
+<p>You typically don’t interact with the Simulation Runner code directly. Instead, you use the controls provided in the <a href="./01_web_application_interface__streamlit__.html">Web Application Interface (Streamlit)</a>.</p>
+<p>Remember from Chapter 1, on the “Run Simulation” page (<code>app/model.py</code>), you have inputs like:</p>
+<ul>
+<li><strong>Number of Runs:</strong> This tells the Simulation Runner how many replications to perform.</li>
+<li><strong>Simulation Duration:</strong> How long each simulation run should last (e.g., 365 days).</li>
+<li>The main <strong>“Run Simulation” button.</strong></li>
+</ul>
+<p>When you click the button, the Streamlit app calls functions from the <code>des_parallel_process.py</code> file.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In app/model.py (simplified example from Chapter 1)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> streamlit <span class="im">as</span> st</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Import simulation runner functions</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> des_parallel_process <span class="im">import</span> runSim, parallelProcessJoblib, collateRunResults</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a button</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>button_run_pressed <span class="op">=</span> st.button(<span class="st">"Click to run the simulation"</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Check if the button was clicked</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> button_run_pressed:</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    st.info(<span class="st">"Simulation started... please wait."</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Retrieve parameters the user set</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    num_runs <span class="op">=</span> st.session_state.number_of_runs_input <span class="co"># How many replications?</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    sim_days <span class="op">=</span> st.session_state.sim_duration_input</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... other parameters ...</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># If running locally (with multiple CPU cores)...</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Use the parallel runner</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    parallelProcessJoblib(</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>        total_runs<span class="op">=</span>num_runs,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>        sim_duration<span class="op">=</span><span class="bu">float</span>(sim_days <span class="op">*</span> <span class="dv">24</span> <span class="op">*</span> <span class="dv">60</span>), <span class="co"># Convert days to minutes</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ... pass other parameters ...</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># After all parallel runs finish, gather the results</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    collateRunResults()</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    st.success(<span class="st">"Simulation complete! View results below."</span>)</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Code to load results and display them follows...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Explanation:</strong></p>
+<ol type="1">
+<li>When the button is pressed, the code gets the <code>num_runs</code> value you selected.</li>
+<li>It calls <code>parallelProcessJoblib</code>, telling it how many runs to perform and passing the simulation settings. This function manages the parallel execution.</li>
+<li><code>parallelProcessJoblib</code> runs the simulation <code>num_runs</code> times, potentially using multiple CPU cores simultaneously. Each run saves its results to a temporary file.</li>
+<li>Once all runs managed by <code>parallelProcessJoblib</code> are complete, <code>collateRunResults</code> is called to merge all the temporary result files into one final file (usually <code>data/run_results.csv</code>).</li>
+<li>The Streamlit app then loads this final file to show you the combined results.</li>
+</ol>
+<p><strong>(Note:</strong> The code also includes logic to run simulations sequentially (<code>runSim</code> in a loop) if parallel processing isn’t available, like on some web hosting platforms.)</p>
+<p><strong>Under the Hood: How Parallel Runs Work</strong></p>
+<p>Let’s trace what happens when you click “Run Simulation” for 4 replications on a computer with multiple cores:</p>
+<ol type="1">
+<li><strong>Trigger:</strong> The Streamlit app calls <code>parallelProcessJoblib(total_runs=4, ...)</code> in <code>des_parallel_process.py</code>.</li>
+<li><strong>Seed Generation:</strong> The runner generates a list of unique starting “random seeds” (like different starting hands in a card game) for each replication. This ensures that although each run uses randomness (<a href="./06_stochastic_modeling__distributions__.html">Stochastic Modeling (Distributions)</a>), the overall set of runs is reproducible if you use the same master seed again.</li>
+<li><strong>Task Distribution:</strong> The runner uses a library called <code>joblib</code>. It creates 4 separate “jobs”, one for each replication. Each job is essentially a command: “Run the simulation once (<code>runSim</code>) with these parameters and this specific random seed”.</li>
+<li><strong>Parallel Execution:</strong> <code>joblib</code> assigns these jobs to available CPU cores. If your computer has 4 cores, all 4 replications might start running at roughly the same time.
+<ul>
+<li>Core 1 runs Replication #1 (<code>runSim(run=0, random_seed=seed1, ...)</code>).</li>
+<li>Core 2 runs Replication #2 (<code>runSim(run=1, random_seed=seed2, ...)</code>).</li>
+<li>Core 3 runs Replication #3 (<code>runSim(run=2, random_seed=seed3, ...)</code>).</li>
+<li>Core 4 runs Replication #4 (<code>runSim(run=3, random_seed=seed4, ...)</code>).</li>
+</ul></li>
+<li><strong>Individual Run:</strong> Inside each <code>runSim</code> call:
+<ul>
+<li>A new <a href="./02_simulation_engine__patient_journey__.html">Simulation Engine (Patient Journey)</a> instance is created with the specific parameters and seed.</li>
+<li>The simulation engine runs through the entire patient journey logic, generating calls, assigning resources (<a href="./05_resource_management__availability___allocation__.html">Resource Management (Availability &amp; Allocation)</a>), and tracking patients (<a href="./03_patient_entity_.html">Patient Entity</a>) and resources (<a href="./04_hems_resource_entity_.html">HEMS Resource Entity</a>).</li>
+<li>At the end of the run, <code>runSim</code> saves the results (the detailed event log) for <em>that specific replication</em> to a temporary file like <code>data/output_run_0.csv</code>, <code>data/output_run_1.csv</code>, etc.</li>
+</ul></li>
+<li><strong>Waiting:</strong> <code>parallelProcessJoblib</code> waits until all 4 jobs have finished and saved their temporary files.</li>
+<li><strong>Collation:</strong> The Streamlit app then calls <code>collateRunResults()</code>.
+<ul>
+<li>This function finds all files matching <code>data/output_run_*.csv</code>.</li>
+<li>It reads each file into memory.</li>
+<li>It combines them into one large table (DataFrame).</li>
+<li>It saves this combined table to <code>data/run_results.csv</code>.</li>
+<li>It deletes the temporary <code>output_run_*.csv</code> files.</li>
+</ul></li>
+<li><strong>Results Display:</strong> The Streamlit app reads <code>data/run_results.csv</code> and displays the aggregated results and visualizations.</li>
+</ol>
+<p><strong>Simplified Diagram:</strong></p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    participant User
+    participant App as Streamlit App (app/model.py)
+    participant Runner as Parallel Runner (parallelProcessJoblib)
+    participant Core1 as CPU Core 1
+    participant Core2 as CPU Core 2
+    participant Collator as Result Collator (collateRunResults)
+
+    User-&gt;&gt;App: Set Number of Runs (e.g., 2), Click Run
+    App-&gt;&gt;Runner: parallelProcessJoblib(total_runs=2, ...)
+    Runner-&gt;&gt;Runner: Generate unique seeds (seed1, seed2)
+    Runner-)Core1: Assign Job 1: runSim(run=0, seed=seed1, ...)
+    Runner-)Core2: Assign Job 2: runSim(run=1, seed=seed2, ...)
+    Note over Core1, Core2: Both runSim execute simultaneously
+    Core1--&gt;&gt;Runner: Run 0 finished, saved output_run_0.csv
+    Core2--&gt;&gt;Runner: Run 1 finished, saved output_run_1.csv
+    Runner--&gt;&gt;App: All parallel runs complete
+    App-&gt;&gt;Collator: collateRunResults()
+    Collator-&gt;&gt;Collator: Find output_run_0.csv, output_run_1.csv
+    Collator-&gt;&gt;Collator: Combine into run_results.csv
+    Collator-&gt;&gt;Collator: Delete temporary files
+    Collator--&gt;&gt;App: Collation complete
+    App-&gt;&gt;User: Display results from run_results.csv
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p><strong>Code Glimpses (<code>des_parallel_process.py</code>)</strong></p>
+<p>Let’s look at the key functions involved:</p>
+<ol type="1">
+<li><p><strong><code>runSim</code>:</strong> Executes a single simulation replication.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In des_parallel_process.py (Simplified)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> des_hems <span class="im">import</span> DES_HEMS <span class="co"># The main simulation engine class</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> utils <span class="im">import</span> Utils <span class="co"># Utility functions</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> runSim(run: <span class="bu">int</span>, total_runs: <span class="bu">int</span>, sim_duration: <span class="bu">int</span>, ..., random_seed: <span class="bu">int</span>):</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Runs one replication of the simulation."""</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"</span><span class="sc">{</span>Utils<span class="sc">.</span>current_time()<span class="sc">}</span><span class="ss">: Starting Run </span><span class="sc">{</span>run<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss"> of </span><span class="sc">{</span>total_runs<span class="sc">}</span><span class="ss"> with seed </span><span class="sc">{</span>random_seed<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    start_time <span class="op">=</span> time.process_time()</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1. Create a simulation model instance for this specific run</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="co">#    Pass the unique random_seed to ensure it behaves independently</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>    daa_model <span class="op">=</span> DES_HEMS(</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        run_number<span class="op">=</span>run,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        sim_duration<span class="op">=</span>sim_duration,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        random_seed<span class="op">=</span>random_seed, <span class="co"># Use the specific seed for this run</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ... other parameters ...</span></span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2. Execute the simulation engine's main run process</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    daa_model.run()</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 3. Get the results DataFrame from the model instance</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>    results_df <span class="op">=</span> daa_model.results_df</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4. Save this run's results to a temporary, unique file</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>    output_filename <span class="op">=</span> os.path.join(Utils.RESULTS_FOLDER, <span class="ss">f"output_run_</span><span class="sc">{</span>run<span class="sc">}</span><span class="ss">.csv"</span>)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    results_df.to_csv(output_filename, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Run </span><span class="sc">{</span>run<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss"> finished in </span><span class="sc">{</span>time<span class="sc">.</span>process_time() <span class="op">-</span> start_time<span class="sc">:.2f}</span><span class="ss">s"</span>)</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># This function implicitly returns when done (or could return results_df)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong><code>parallelProcessJoblib</code>:</strong> Manages running <code>runSim</code> multiple times in parallel.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In des_parallel_process.py (Simplified)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> joblib <span class="im">import</span> Parallel, delayed</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numpy.random <span class="im">import</span> SeedSequence <span class="co"># For generating good random seeds</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> parallelProcessJoblib(total_runs: <span class="bu">int</span>, sim_duration: <span class="bu">int</span>, ..., master_seed<span class="op">=</span><span class="dv">42</span>, n_cores<span class="op">=-</span><span class="dv">1</span>):</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Executes multiple simulation runs in parallel using joblib."""</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1. Generate a list of unique, independent seeds for each run</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="co">#    Derived from the master_seed for reproducibility.</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    seed_sequence <span class="op">=</span> SeedSequence(master_seed).spawn(total_runs)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    run_seeds <span class="op">=</span> [s.generate_state(<span class="dv">1</span>)[<span class="dv">0</span>] <span class="cf">for</span> s <span class="kw">in</span> seed_sequence]</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Starting </span><span class="sc">{</span>total_runs<span class="sc">}</span><span class="ss"> runs in parallel using </span><span class="sc">{</span>n_cores<span class="sc">}</span><span class="ss"> cores..."</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2. Use joblib's Parallel and delayed functions</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">#    This tells joblib to call 'runSim' for each run number from 0 to total_runs-1</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="co">#    It automatically distributes these calls across 'n_cores' CPUs.</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    Parallel(n_jobs<span class="op">=</span>n_cores)(</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        delayed(runSim)(</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>            run<span class="op">=</span>i, <span class="co"># The current run number (0, 1, 2, ...)</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>            total_runs<span class="op">=</span>total_runs,</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>            sim_duration<span class="op">=</span>sim_duration,</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>            random_seed<span class="op">=</span>run_seeds[i], <span class="co"># Pass the unique seed for this run</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>            <span class="co"># ... pass other parameters ...</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(total_runs) <span class="co"># Loop through the number of replications</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"All parallel runs completed."</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># This function finishes when all the 'delayed(runSim)' calls are done.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong><code>collateRunResults</code>:</strong> Gathers the results from the temporary files.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In des_parallel_process.py (Simplified)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> glob <span class="co"># For finding files matching a pattern</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> utils <span class="im">import</span> Utils</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> collateRunResults() <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Collates results from temporary run files into a single CSV."""</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Collating results..."</span>)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 1. Find all files starting with "output_run_" in the results folder</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    temp_files_pattern <span class="op">=</span> os.path.join(Utils.RESULTS_FOLDER, <span class="st">"output_run_*.csv"</span>)</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    temp_files <span class="op">=</span> glob.glob(temp_files_pattern)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="kw">not</span> temp_files:</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>        <span class="bu">print</span>(<span class="st">"No temporary result files found."</span>)</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 2. Read each temporary file into a pandas DataFrame and store in a list</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    list_of_dfs <span class="op">=</span> [pd.read_csv(f) <span class="cf">for</span> f <span class="kw">in</span> temp_files]</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 3. Concatenate (stack) all these DataFrames into one big DataFrame</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>    combined_df <span class="op">=</span> pd.concat(list_of_dfs, ignore_index<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 4. Save the combined DataFrame to the final results file</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>    final_output_path <span class="op">=</span> Utils.RUN_RESULTS_CSV <span class="co"># e.g., "data/run_results.csv"</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>    combined_df.to_csv(final_output_path, index<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Combined results saved to </span><span class="sc">{</span>final_output_path<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 5. Clean up: Delete the temporary files</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> f <span class="kw">in</span> temp_files:</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>        os.remove(f)</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Temporary files removed."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ol>
+<p><strong>Conclusion</strong></p>
+<p>The Simulation Runner is the mechanism that actually executes our simulation model. Because our model includes randomness (<a href="./06_stochastic_modeling__distributions__.html">Stochastic Modeling (Distributions)</a>), running it just once isn’t enough. The runner allows us to perform multiple <strong>replications</strong>.</p>
+<p>Crucially, it supports <strong>parallelization</strong>, using <code>joblib</code> to run many replications simultaneously on different CPU cores. This dramatically speeds up the process of gathering enough data for reliable analysis. Finally, helper functions like <code>collateRunResults</code> merge the outputs from all these parallel runs into a single, tidy dataset.</p>
+<p>Now that we have this combined dataset containing results from potentially many simulation runs, how do we make sense of it all? How do we calculate key metrics and create informative charts? That’s the focus of our final chapter.</p>
+<p><strong>Next:</strong> <a href="./08_results_processing___visualization_.html">Chapter 8: Results Processing &amp; Visualization</a></p>
+<hr>
+<p>Generated by <a href="https://github.com/The-Pocket/Tutorial-Codebase-Knowledge">AI Codebase Knowledge Builder</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

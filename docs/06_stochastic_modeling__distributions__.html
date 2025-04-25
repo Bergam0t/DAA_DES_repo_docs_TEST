@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>stochastic_modeling__distributions__ – HEMS Simulation Documentation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ddd961a2510921635943dfbbd19534c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">HEMS Simulation Documentation</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-components" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Components</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-components">    
+        <li>
+    <a class="dropdown-item" href="./01_web_application_interface__streamlit__.html">
+ <span class="dropdown-text">Web Application Interface (Streamlit)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./02_simulation_engine__patient_journey__.html">
+ <span class="dropdown-text">Simulation Engine (Patient Journey)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./03_patient_entity_.html">
+ <span class="dropdown-text">Patient Entity</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./04_hems_resource_entity_.html">
+ <span class="dropdown-text">HEMS Resource Entity</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./05_resource_management__availability___allocation__.html">
+ <span class="dropdown-text">Resource Management (Availability &amp; Allocation)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./06_stochastic_modeling__distributions__.html">
+ <span class="dropdown-text">Stochastic Modeling (Distributions)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./07_simulation_runner___parallelization_.html">
+ <span class="dropdown-text">Simulation Runner &amp; Parallelization</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./08_results_processing___visualization_.html">
+ <span class="dropdown-text">Results Processing &amp; Visualization</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#chapter-6-stochastic-modeling-distributions" id="toc-chapter-6-stochastic-modeling-distributions" class="nav-link active" data-scroll-target="#chapter-6-stochastic-modeling-distributions">Chapter 6: Stochastic Modeling (Distributions)</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+
+
+
+
+<section id="chapter-6-stochastic-modeling-distributions" class="level1">
+<h1>Chapter 6: Stochastic Modeling (Distributions)</h1>
+<p>In <a href="./05_resource_management__availability___allocation__.html">Chapter 5: Resource Management (Availability &amp; Allocation)</a>, we saw how the simulation acts like a dispatcher, assigning available helicopters and cars to incoming emergencies. But when a resource <em>is</em> assigned, how does the simulation know how long things will take? How long to get ready (mobilisation)? How long to fly to the scene? How long will the crew spend treating the patient?</p>
+<p><strong>The Problem: The Real World is Messy and Unpredictable</strong></p>
+<p>Imagine we set the simulation so that mobilisation <em>always</em> takes exactly 5 minutes, flying to the scene <em>always</em> takes 12 minutes, and time on scene is <em>always</em> 25 minutes. This might be easy to program, but it’s not realistic!</p>
+<p>In reality: * Sometimes crews mobilise faster, sometimes slower. * Flight times depend on wind, exact location, and air traffic. * Time on scene varies hugely depending on the patient’s condition and the complexity of the incident. * Calls don’t arrive like clockwork; sometimes many come close together, sometimes there are long quiet periods. * Patients aren’t all the same; they have different ages, conditions, etc.</p>
+<p>If we use fixed numbers, our simulation won’t accurately reflect the variability and randomness of the real world. The results might look too neat and predictable, potentially leading to wrong conclusions about resource needs or performance.</p>
+<p><strong>The Solution: Using Loaded Dice (Based on Reality!)</strong></p>
+<p>This is where <strong>Stochastic Modeling</strong> comes in. “Stochastic” just means involving randomness or probability. Instead of fixed values, we use <strong>statistical distributions</strong> to model key parameters.</p>
+<p>Think of it like using <strong>loaded dice</strong> in our simulation game. But instead of loading them unfairly, we load them based on <strong>real-world statistics</strong> gathered from historical data.</p>
+<ul>
+<li>Instead of mobilisation <em>always</em> being 5 minutes, the simulation “rolls the dice” and gets a value like 4.2 minutes, 5.8 minutes, or maybe even 7.1 minutes.</li>
+<li>These random values aren’t completely chaotic; they follow a specific pattern (a distribution) that matches what we’ve observed in the past. Maybe most mobilisations are around 5 minutes, but some are shorter and some are longer, following a sort of bell curve.</li>
+</ul>
+<p>This introduces realistic variability and makes the simulation behave much more like the actual HEMS system.</p>
+<p><strong>What Are Distributions?</strong></p>
+<p>A statistical distribution is just a mathematical way to describe the likelihood of different outcomes. Some common examples:</p>
+<ul>
+<li><strong>Normal Distribution (Bell Curve):</strong> Many values cluster around the average, with fewer values further away (e.g., human height).</li>
+<li><strong>Exponential Distribution:</strong> Often used for time between events; short times are common, long times are rare (e.g., time until the next customer arrives).</li>
+<li><strong>Uniform Distribution:</strong> Every value within a range is equally likely (e.g., rolling a standard fair die).</li>
+<li><strong>Poisson Distribution:</strong> Used for counting events in a fixed time (e.g., number of calls per hour).</li>
+</ul>
+<p>Our simulation doesn’t need to know the complex math behind these. It just needs to know <em>which</em> distribution to use for a specific variable and what the <em>parameters</em> of that distribution are (e.g., for a normal distribution, the average and the spread).</p>
+<p><strong>Where Are Distributions Used in DAA_DES?</strong></p>
+<p>We use distributions derived from historical data for many key aspects:</p>
+<ol type="1">
+<li><strong>Inter-arrival Times:</strong> How long until the next emergency call arrives? This often follows patterns based on the time of day and day of the week. (<code>des_hems.py</code> uses logic based on <code>distribution_data/hourly_arrival_by_qtr_probs.csv</code> and probabilities).</li>
+<li><strong>Activity Durations:</strong> How long does each stage of the patient journey take?
+<ul>
+<li>Time to allocate resource (<code>time_allocation</code>)</li>
+<li>Time to get mobile (<code>time_mobile</code>)</li>
+<li>Time to reach the scene (<code>time_to_scene</code>)</li>
+<li>Time spent on scene (<code>time_on_scene</code>)</li>
+<li>Time to fly/drive to hospital (<code>time_to_hospital</code>)</li>
+<li>Time until the resource is clear/available again (<code>time_to_clear</code>) These are looked up and sampled primarily by the <code>Utils.activity_time</code> function in <code>utils.py</code>, using definitions from <code>distribution_data/activity_time_distributions.txt</code>.</li>
+</ul></li>
+<li><strong>Patient Characteristics:</strong>
+<ul>
+<li><strong>AMPDS Code:</strong> What type of emergency is it likely to be, based on the hour? (<code>Utils.ampds_code_selection</code> in <code>utils.py</code>, using <code>distribution_data/hour_by_ampds_card_probs.csv</code>).</li>
+<li><strong>Age:</strong> How old is the patient, given the type of emergency? (<code>Utils.age_sampling</code> in <code>utils.py</code>, using <code>distribution_data/age_distributions.txt</code>).</li>
+<li><strong>Sex:</strong> Is the patient male or female, given the type of emergency? (<code>Utils.sex_selection</code> in <code>utils.py</code>, using <code>distribution_data/sex_by_ampds_card_probs.csv</code>).</li>
+<li><strong>Care Category:</strong> Does the patient need Critical Care (CC) or Emergency Care (EC)? (<code>Utils.care_category_selection</code> in <code>utils.py</code>).</li>
+</ul></li>
+</ol>
+<p>By using distributions for these, the simulation generates a wide range of plausible scenarios, reflecting real-world randomness.</p>
+<p><strong>Preparing the Distributions: <code>distribution_fit_utils.py</code></strong></p>
+<p>How do we know <em>which</em> distribution and parameters to use for, say, ‘time on scene’ for a helicopter? We analyse historical data!</p>
+<p>This is the job of the script <code>distribution_fit_utils.py</code>. Think of this script as a <strong>data scientist</strong> that runs <em>before</em> the main simulation. Its process is roughly:</p>
+<ol type="1">
+<li><strong>Load Data:</strong> Read a large dataset of past HEMS incidents (e.g., from <code>external_data/clean_daa_import.csv</code>).</li>
+<li><strong>Filter Data:</strong> Select the relevant data points (e.g., all ‘time on scene’ values for helicopter incidents where the patient was conveyed).</li>
+<li><strong>Fit Distributions:</strong> Use a statistical library (like <code>Fitter</code>) to try fitting various standard distributions (Normal, Exponential, Gamma, etc.) to the selected data.</li>
+<li><strong>Choose Best Fit:</strong> The library helps determine which distribution provides the “best fit” to the historical data.</li>
+<li><strong>Save Results:</strong> Save the name of the best-fitting distribution and its calculated parameters (e.g., for a Gamma distribution, the shape ‘a’ and scale ‘scale’ parameters) into configuration files.</li>
+</ol>
+<p>These resulting configuration files are typically stored in the <code>distribution_data/</code> folder. For example:</p>
+<ul>
+<li><code>distribution_data/activity_time_distributions.txt</code>: Stores the best distributions for mobilisation time, scene time, etc., often broken down by vehicle type and outcome.</li>
+<li><code>distribution_data/age_distributions.txt</code>: Stores the best distributions for patient age, broken down by the type of emergency (AMPDS code).</li>
+<li>Various <code>.csv</code> files storing probabilities (e.g., <code>hour_by_ampds_card_probs.csv</code>).</li>
+</ul>
+<p><strong>Important:</strong> You usually don’t need to run <code>distribution_fit_utils.py</code> yourself unless the historical data changes significantly or you want to re-analyse it. The pre-calculated files in <code>distribution_data/</code> allow the main simulation to run.</p>
+<p><strong>How the Simulation Uses the Prepared Distributions</strong></p>
+<p>The <a href="./02_simulation_engine__patient_journey__.html">Simulation Engine (Patient Journey)</a> relies heavily on helper functions within <code>utils.py</code> to get these random values. Let’s look at a key example: getting an activity duration.</p>
+<p>Inside the <code>patient_journey</code> function in <code>des_hems.py</code>, you see lines like this:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In des_hems.py (simplified 'patient_journey' function)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Mobilisation Time ---</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Ask the Utils class for a realistic mobilisation time</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># based on the vehicle type (e.g., 'helicopter')</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>mobilisation_time <span class="op">=</span> <span class="va">self</span>.utils.activity_time(patient.hems_vehicle_type, <span class="st">'time_mobile'</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Use simpy to wait for that randomly generated duration</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="cf">yield</span> <span class="va">self</span>.env.timeout(mobilisation_time)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="va">self</span>.add_patient_result_row(patient, <span class="st">"HEMS mobile"</span>, <span class="st">"queue"</span>) <span class="co"># Record event</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Time To Scene ---</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Ask for a realistic travel time</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>tts_time <span class="op">=</span> <span class="va">self</span>.utils.activity_time(patient.hems_vehicle_type, <span class="st">'time_to_scene'</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="cf">yield</span> <span class="va">self</span>.env.timeout(tts_time) <span class="co"># Wait</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="va">self</span>.add_patient_result_row(patient, <span class="st">"HEMS on scene"</span>, <span class="st">"queue"</span>) <span class="co"># Record event</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="co"># --- Time On Scene ---</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Ask for a realistic time spent on scene</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>tos_time <span class="op">=</span> <span class="va">self</span>.utils.activity_time(patient.hems_vehicle_type, <span class="st">'time_on_scene'</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="cf">yield</span> <span class="va">self</span>.env.timeout(tos_time) <span class="co"># Wait</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="va">self</span>.add_patient_result_row(patient, <span class="st">"HEMS leaving scene"</span>, <span class="st">"queue"</span>) <span class="co"># Record event</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="co"># ... other steps ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This code doesn’t contain fixed numbers like <code>yield self.env.timeout(5)</code>. Instead, it calls <code>self.utils.activity_time(...)</code> each time it needs a duration. This function handles the “dice rolling” based on the pre-calculated distributions.</p>
+<p><strong>Under the Hood: <code>Utils.activity_time</code> and <code>SeededDistribution</code></strong></p>
+<p>Let’s peek inside <code>utils.py</code> to see how <code>activity_time</code> (conceptually) works:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In utils.py (Conceptual Simplified Version)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> scipy.stats <span class="co"># Library for statistical distributions</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np <span class="co"># Library for numerical operations</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> SeededDistribution:</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># This class holds a specific distribution (like 'gamma')</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># and its parameters, along with a dedicated random number generator (rng)</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="co"># to ensure consistent random sequences if needed.</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, dist_function, rng, <span class="op">**</span>params):</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.dist <span class="op">=</span> dist_function(<span class="op">**</span>params) <span class="co"># Create the distribution object</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.rng <span class="op">=</span> rng                      <span class="co"># Store the random generator</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> sample(<span class="va">self</span>):</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Generate one random number from this specific distribution</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># using its dedicated generator.</span></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.dist.rvs(random_state<span class="op">=</span><span class="va">self</span>.rng)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Utils:</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, master_seed<span class="op">=</span><span class="va">None</span>, ...):</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ... (other initialisation) ...</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 1. Load pre-calculated distributions (from files) when Utils starts</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>        <span class="co"># self.activity_time_distr would look something like:</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>        <span class="co"># { ('helicopter', 'time_mobile'): SeededDistribution(scipy.stats.gamma, rng1, a=2.5, scale=2.0),</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>        <span class="co">#   ('car', 'time_mobile'): SeededDistribution(scipy.stats.lognorm, rng2, s=0.8, scale=4.5),</span></span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>        <span class="co">#   ('helicopter', 'time_to_scene'): SeededDistribution(scipy.stats.weibull_min, rng3, c=1.5, scale=10.0),</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>        <span class="co">#   ... etc for all combinations ... }</span></span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.activity_time_distr <span class="op">=</span> <span class="va">self</span>._load_activity_distributions(master_seed)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.min_max_cache <span class="op">=</span> <span class="va">self</span>._load_min_max_times() <span class="co"># Load acceptable time ranges</span></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> activity_time(<span class="va">self</span>, vehicle_type: <span class="bu">str</span>, time_type: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>        <span class="co">"""Gets a realistic, random duration for a specific activity."""</span></span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 2. Look up the correct SeededDistribution object based on inputs</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>        dist_object <span class="op">=</span> <span class="va">self</span>.activity_time_distr.get((vehicle_type, time_type))</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> dist_object <span class="kw">is</span> <span class="va">None</span>:</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>            <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="ss">f"No distribution found for </span><span class="sc">{</span>vehicle_type<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>time_type<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 3. Look up the min/max acceptable times for this activity type</span></span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>        min_time, max_time <span class="op">=</span> <span class="va">self</span>.min_max_cache[time_type]</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 4. Keep sampling until we get a value within the acceptable range</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>        sampled_time <span class="op">=</span> <span class="op">-</span><span class="fl">1.0</span></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>        <span class="cf">while</span> <span class="kw">not</span> (min_time <span class="op">&lt;=</span> sampled_time <span class="op">&lt;=</span> max_time):</span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>            sampled_time <span class="op">=</span> dist_object.sample() <span class="co"># "Roll the loaded dice"</span></span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>        <span class="co"># 5. Return the realistic, randomly sampled time</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> sampled_time</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _load_activity_distributions(<span class="va">self</span>, master_seed):</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>        <span class="co"># This private helper function (simplified):</span></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>        <span class="co"># - Reads 'distribution_data/activity_time_distributions.txt'</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>        <span class="co"># - Sets up separate random number generators (RNGs) for each distribution</span></span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>        <span class="co">#   (using numpy.random.default_rng and SeedSequence from master_seed)</span></span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>        <span class="co">#   for better statistical properties and reproducibility.</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>        <span class="co"># - Creates the SeededDistribution objects and stores them in a dictionary.</span></span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ... implementation details omitted ...</span></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>        seeded_distributions <span class="op">=</span> {} <span class="co"># Dictionary to hold the results</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ... code to read file, create RNGs, create SeededDistribution objects ...</span></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> seeded_distributions <span class="co"># Return the dictionary like the example above</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> _load_min_max_times(<span class="va">self</span>):</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Reads 'actual_data/upper_allowable_time_bounds.csv' into a lookup dictionary</span></span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ... implementation details omitted ...</span></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>        cache <span class="op">=</span> {}</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ... code to read file and populate cache ...</span></span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> cache</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Other utility functions like age_sampling, sex_selection work similarly:</span></span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>    <span class="co"># - Look up probabilities or distribution parameters from loaded data.</span></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>    <span class="co"># - Use a dedicated random number generator to sample or make a choice.</span></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>    <span class="co"># def age_sampling(self, ampds_card: int, max_age: int) -&gt; float: ...</span></span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>    <span class="co"># def sex_selection(self, ampds_card: int) -&gt; str: ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>Key Ideas from the Code:</strong></p>
+<ol type="1">
+<li><strong>Pre-calculation:</strong> The distributions are figured out beforehand by <code>distribution_fit_utils.py</code> and loaded when the <code>Utils</code> class starts.</li>
+<li><strong>Lookup:</strong> The <code>activity_time</code> function finds the correct pre-loaded distribution based on the <code>vehicle_type</code> and <code>time_type</code>.</li>
+<li><strong>Sampling:</strong> It calls the <code>sample()</code> method of the <code>SeededDistribution</code> object, which uses a dedicated random number generator (<code>rng</code>) and the specific distribution function (<code>scipy.stats.gamma</code>, <code>scipy.stats.lognorm</code>, etc.) to generate a random value following the historical pattern.</li>
+<li><strong>Bounds Checking:</strong> It ensures the sampled time is within realistic minimum and maximum limits defined in <code>actual_data/upper_allowable_time_bounds.csv</code>.</li>
+<li><strong>Seeding:</strong> The use of <code>master_seed</code>, <code>SeedSequence</code>, and <code>default_rng</code> ensures that if you run the simulation with the same seed, you will get the <em>exact same sequence</em> of “random” numbers, making the simulation reproducible for testing and debugging.</li>
+</ol>
+<p><strong>Simplified Data Flow:</strong></p>
+<p>Here’s how the pieces fit together:</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">graph LR
+    A[Historical Data (CSV)] --&gt; B(distribution_fit_utils.py);
+    B -- Analyzes Data --&gt; C{Distribution Files (distribution_data/)};
+    C -- Loaded at Start --&gt; D(Utils Class);
+    E[Simulation Engine (des_hems.py)] -- Needs Random Value --&gt; D;
+    D -- Looks up Distribution &amp; Samples --&gt; F[Realistic Random Value (e.g., 11.5 min)];
+    E -- Uses Value --&gt; G(Simulation Progresses);
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p><strong>Conclusion</strong></p>
+<p>Stochastic modeling, using statistical distributions, is essential for making the DAA_DES simulation realistic. Instead of using fixed, unrealistic numbers, the simulation samples values from distributions that are carefully chosen based on historical data. This ensures that factors like call arrival times, activity durations, and patient details vary randomly but follow patterns observed in the real world.</p>
+<p>The <code>distribution_fit_utils.py</code> script performs the initial analysis of historical data to determine these distributions, saving them to files. The main simulation engine then uses functions in <code>utils.py</code> (like <code>activity_time</code>) to “roll the dice” according to these pre-calculated distributions whenever it needs a random but realistic value. This randomness is key to exploring the range of possible outcomes and getting meaningful insights from the simulation.</p>
+<p>So far, we’ve seen the interface, the engine directing the flow, the patient and resource entities, how resources are managed, and how randomness is introduced. But how do we actually <em>run</em> the simulation, potentially multiple times to account for this randomness, and do it efficiently? That’s the focus of the next chapter.</p>
+<p><strong>Next:</strong> <a href="./07_simulation_runner___parallelization_.html">Chapter 7: Simulation Runner &amp; Parallelization</a></p>
+<hr>
+<p>Generated by <a href="https://github.com/The-Pocket/Tutorial-Codebase-Knowledge">AI Codebase Knowledge Builder</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

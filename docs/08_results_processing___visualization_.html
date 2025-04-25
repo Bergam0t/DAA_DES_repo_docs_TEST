@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.40">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>results_processing___visualization_ – HEMS Simulation Documentation</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-549806ee2085284f45b00abea8c6df48.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ddd961a2510921635943dfbbd19534c4.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
+
+
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">HEMS Simulation Documentation</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-components" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Components</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-components">    
+        <li>
+    <a class="dropdown-item" href="./01_web_application_interface__streamlit__.html">
+ <span class="dropdown-text">Web Application Interface (Streamlit)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./02_simulation_engine__patient_journey__.html">
+ <span class="dropdown-text">Simulation Engine (Patient Journey)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./03_patient_entity_.html">
+ <span class="dropdown-text">Patient Entity</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./04_hems_resource_entity_.html">
+ <span class="dropdown-text">HEMS Resource Entity</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./05_resource_management__availability___allocation__.html">
+ <span class="dropdown-text">Resource Management (Availability &amp; Allocation)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./06_stochastic_modeling__distributions__.html">
+ <span class="dropdown-text">Stochastic Modeling (Distributions)</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./07_simulation_runner___parallelization_.html">
+ <span class="dropdown-text">Simulation Runner &amp; Parallelization</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./08_results_processing___visualization_.html">
+ <span class="dropdown-text">Results Processing &amp; Visualization</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#chapter-8-results-processing-visualization" id="toc-chapter-8-results-processing-visualization" class="nav-link active" data-scroll-target="#chapter-8-results-processing-visualization">Chapter 8: Results Processing &amp; Visualization</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"></header>
+
+
+
+
+<section id="chapter-8-results-processing-visualization" class="level1">
+<h1>Chapter 8: Results Processing &amp; Visualization</h1>
+<p>Welcome to the final chapter! In <a href="./07_simulation_runner___parallelization_.html">Chapter 7: Simulation Runner &amp; Parallelization</a>, we saw how the simulation is run multiple times (replications) to account for randomness, and how all the raw data from these runs is gathered into a single big file, usually called <code>data/run_results.csv</code>.</p>
+<p>But what do we <em>do</em> with this big file? It contains thousands, maybe millions, of rows detailing every little event that happened in every simulation run. Just looking at the raw data won’t tell us much about overall performance or answer questions like “Did adding that extra car actually help?”</p>
+<p><strong>What Problem Does This Solve? The Need for Insights</strong></p>
+<p>Imagine you’re a manager who just received a massive spreadsheet listing every single sale made last year – every item, every customer, every timestamp. Useful data, perhaps, but overwhelming! What you really need is a report summarizing: * Total sales this year vs.&nbsp;last year. * Average sale value. * Busiest sales hours. * A chart showing monthly sales trends.</p>
+<p>Our simulation output (<code>run_results.csv</code>) is like that raw sales spreadsheet. The <strong>Results Processing &amp; Visualization</strong> component acts like the <strong>analytics department</strong>. It takes this raw simulation log data and transforms it into meaningful insights. It calculates key performance indicators (KPIs), creates charts, and compares the simulation’s output to historical data, presenting everything clearly in the <a href="./01_web_application_interface__streamlit__.html">Web Application Interface (Streamlit)</a>.</p>
+<p><strong>From Raw Data to Clear Results: The Workflow</strong></p>
+<p>This component performs several key tasks, mostly handled by Python scripts found in the <code>visualisation/</code> folder:</p>
+<ol type="1">
+<li><strong>Load Data:</strong> It reads the combined results file (<code>data/run_results.csv</code>) generated by the <a href="./07_simulation_runner___parallelization_.html">Simulation Runner &amp; Parallelization</a>. It also loads relevant historical data from files typically stored in the <code>historical_data/</code> folder.</li>
+<li><strong>Process &amp; Calculate:</strong> It cleans and structures the data. Then, it performs calculations using libraries like <code>pandas</code> to determine important metrics (KPIs):
+<ul>
+<li><strong>Resource Utilization:</strong> What percentage of their available time were helicopters and cars busy? (Uses functions in <code>visualisation/_utilisation_result_calculation.py</code>)</li>
+<li><strong>Job Counts:</strong> How many jobs were handled per month, per hour, or per day? How many were potentially missed? (Uses functions in <code>visualisation/_job_count_calculation.py</code>)</li>
+<li><strong>Activity Timings:</strong> How long did key activities like mobilisation or time on scene take, on average? (Uses functions in <code>visualisation/_job_time_calcs.py</code>)</li>
+<li><strong>Process Flow:</strong> Analyzing the sequence of events. (Uses functions in <code>visualisation/_process_analytics.py</code>)</li>
+</ul></li>
+<li><strong>Compare:</strong> It compares the calculated metrics from the simulation against the loaded historical data. For example, comparing the simulated average monthly jobs to the actual average monthly jobs from past years.</li>
+<li><strong>Generate Outputs:</strong> It creates:
+<ul>
+<li><strong>KPI values:</strong> Single numbers representing key metrics (e.g., average H70 utilisation = 25.3%).</li>
+<li><strong>Tables:</strong> Structured summaries of data (e.g., a table showing utilisation for each resource).</li>
+<li><strong>Plots:</strong> Visual charts (e.g., line charts, bar charts, box plots) created using libraries like <code>plotly</code>.</li>
+</ul></li>
+<li><strong>Display:</strong> These generated KPIs, tables, and plots are then passed back to the Streamlit application (<code>app/model.py</code>), which uses functions like <code>st.metric</code>, <code>st.dataframe</code>, and <code>st.plotly_chart</code> to display them neatly in the web interface tabs.</li>
+</ol>
+<p><strong>Example 1: Calculating a KPI (Resource Utilization)</strong></p>
+<p>Let’s say we want to calculate the average utilization for the H70 helicopter across all simulation runs.</p>
+<ul>
+<li><p><strong>Input:</strong> <code>data/run_results.csv</code> (need columns like <code>run_number</code>, <code>callsign</code>, <code>event_type</code>, <code>timestamp_dt</code>) and data on H70’s scheduled availability (from <a href="./05_resource_management__availability___allocation__.html">Resource Management (Availability &amp; Allocation)</a>).</p></li>
+<li><p><strong>Logic (Simplified):</strong></p>
+<ol type="1">
+<li>Filter <code>run_results.csv</code> to get only the ‘resource_use’ and ‘resource_use_end’ events for ‘H70’.</li>
+<li>For each job H70 attended in each run, calculate the time duration between ‘resource_use’ and ‘resource_use_end’.</li>
+<li>Sum these durations for H70 within each <code>run_number</code>. This gives the total time H70 was busy in each run.</li>
+<li>Determine the <em>total time H70 was available</em> during the simulation (considering its rota and any maintenance, calculated by helper functions perhaps using <code>visualisation/_vehicle_calculation.py</code>).</li>
+<li>For each run, divide the total busy time by the total available time to get the utilisation percentage for that run.</li>
+<li>Calculate the average of these utilisation percentages across all runs.</li>
+</ol></li>
+<li><p><strong>Code:</strong> The actual calculation happens inside functions within <code>visualisation/_utilisation_result_calculation.py</code>. A simplified conceptual snippet might look like:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In visualisation/_utilisation_result_calculation.py (Conceptual)</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Assume 'resource_use_wide' DataFrame has columns:</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># 'run_number', 'callsign', 'resource_use_duration' (in minutes)</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Assume 'total_avail_minutes' DataFrame has columns:</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># 'callsign', 'total_available_minutes_in_sim'</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> calculate_average_utilisation(resource_use_wide, total_avail_minutes):</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Sum busy time per run and callsign</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    utilisation_per_run <span class="op">=</span> resource_use_wide.groupby([<span class="st">'run_number'</span>, <span class="st">'callsign'</span>])[<span class="st">'resource_use_duration'</span>].<span class="bu">sum</span>().reset_index()</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Merge with available time</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    utilisation_per_run <span class="op">=</span> utilisation_per_run.merge(total_avail_minutes, on<span class="op">=</span><span class="st">'callsign'</span>)</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate percentage utilisation for each run</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    utilisation_per_run[<span class="st">'perc_time_in_use'</span>] <span class="op">=</span> (</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>        utilisation_per_run[<span class="st">'resource_use_duration'</span>] <span class="op">/</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>        utilisation_per_run[<span class="st">'total_available_minutes_in_sim'</span>]</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate the average across all runs for each callsign</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    average_utilisation <span class="op">=</span> utilisation_per_run.groupby(<span class="st">'callsign'</span>)[<span class="st">'perc_time_in_use'</span>].mean().reset_index()</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Format as percentage string for display</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    average_utilisation[<span class="st">'PRINT_perc'</span>] <span class="op">=</span> average_utilisation[<span class="st">'perc_time_in_use'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: <span class="ss">f"</span><span class="sc">{</span>x<span class="sc">:.1%}</span><span class="ss">"</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> average_utilisation <span class="co"># Return a DataFrame with results per callsign</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Display:</strong> The Streamlit app (<code>app/model.py</code>) calls this calculation function and then uses <code>st.metric</code> to show the result:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In app/model.py (Simplified)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> streamlit <span class="im">as</span> st</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> visualisation._utilisation_result_calculation <span class="im">as</span> util_calcs</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ... (simulation runs and results_all_runs DataFrame is loaded) ...</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Call the function to calculate utilisation</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># (This function internally processes results_all_runs)</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>resource_use_wide, utilisation_df_overall, _, _ <span class="op">=</span> util_calcs.make_utilisation_model_dataframe(...)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Get the specific value for H70</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>h70_util_fig <span class="op">=</span> utilisation_df_overall[utilisation_df_overall[<span class="st">'callsign'</span>]<span class="op">==</span><span class="st">'H70'</span>][<span class="st">'PRINT_perc'</span>].values[<span class="dv">0</span>]</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Display it using Streamlit's metric widget</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>st.metric(<span class="st">"Average Simulated H70 Utilisation"</span>, h70_util_fig)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ul>
+<p><strong>Example 2: Generating a Visualization (Monthly Jobs Plot)</strong></p>
+<p>Let’s create a plot showing the average number of jobs per month in the simulation compared to historical data.</p>
+<ul>
+<li><p><strong>Input:</strong> <code>data/run_results.csv</code> (need <code>run_number</code>, <code>P_ID</code>, <code>timestamp_dt</code>, <code>time_type</code>) and a historical data file like <code>historical_data/historical_monthly_totals_all_calls.csv</code>.</p></li>
+<li><p><strong>Logic (Simplified):</strong></p>
+<ol type="1">
+<li>Filter <code>run_results.csv</code> for ‘arrival’ events (each arrival represents a potential job).</li>
+<li>Extract the month and year from the <code>timestamp_dt</code> for each arrival.</li>
+<li>Group the data by <code>run_number</code> and <code>month</code>, then count the number of arrivals (<code>P_ID</code>s) in each group. This gives the monthly job count for each run.</li>
+<li>For each month, calculate the average count across all runs. Also, calculate measures of variation (like min/max or percentiles) across the runs for that month.</li>
+<li>Load the historical monthly job counts from the CSV file.</li>
+<li>Use <code>plotly</code> to generate a line chart:
+<ul>
+<li>One line for the average simulated monthly count.</li>
+<li>A shaded area around the average line representing the variation (e.g., min to max) across runs.</li>
+<li>Another line or shaded area representing the historical data range.</li>
+</ul></li>
+</ol></li>
+<li><p><strong>Code:</strong> Functions in <code>visualisation/_job_count_calculation.py</code> handle this.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In visualisation/_job_count_calculation.py (Conceptual)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.express <span class="im">as</span> px</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> plotly.graph_objects <span class="im">as</span> go</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_monthly_calls(call_df, historical_monthly_job_data_path, ...):</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Assume 'call_df' has arrival data per patient/run</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Extract month</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>    call_df[<span class="st">'timestamp_dt'</span>] <span class="op">=</span> pd.to_datetime(call_df[<span class="st">'timestamp_dt'</span>])</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    call_df[<span class="st">'month_start'</span>] <span class="op">=</span> call_df[<span class="st">'timestamp_dt'</span>].dt.to_period(<span class="st">'M'</span>).dt.to_timestamp()</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate monthly calls per run</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    call_counts_monthly <span class="op">=</span> call_df.groupby([<span class="st">'run_number'</span>, <span class="st">'month_start'</span>])[<span class="st">'P_ID'</span>].count().reset_index()</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... (filter out partial start/end months) ...</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Calculate average and variation (min/max) across runs</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    summary <span class="op">=</span> call_counts_monthly.groupby(<span class="st">'month_start'</span>)[<span class="st">'monthly_calls'</span>].agg([<span class="st">'mean'</span>, <span class="st">'min'</span>, <span class="st">'max'</span>]).reset_index()</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Load historical data</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>    historical_data <span class="op">=</span> pd.read_csv(historical_monthly_job_data_path)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... (process historical data similarly) ...</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Create plot using Plotly</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    fig <span class="op">=</span> go.Figure()</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add shaded region for simulation range (min to max)</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    fig.add_traces(...) <span class="co"># Min/Max lines with fill='tonexty'</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add line for simulation average</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    fig.add_trace(go.Scatter(x<span class="op">=</span>summary[<span class="st">'month_start'</span>], y<span class="op">=</span>summary[<span class="st">'mean'</span>], name<span class="op">=</span><span class="st">'Simulated Average'</span>, ...))</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Add line/region for historical data</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    fig.add_traces(...) <span class="co"># Historical data</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>    fig.update_layout(title<span class="op">=</span><span class="st">"Monthly Calls: Simulation vs Historical"</span>, ...)</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> fig <span class="co"># Return the Plotly figure object</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+<li><p><strong>Display:</strong> The Streamlit app (<code>app/model.py</code>) calls this plotting function and displays the generated figure.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In app/model.py (Simplified)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> streamlit <span class="im">as</span> st</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> visualisation._job_count_calculation <span class="im">as</span> job_calcs</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># ... (simulation runs and results_all_runs DataFrame is loaded) ...</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Prepare the 'call_df' needed by the plotting function</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>call_df <span class="op">=</span> job_calcs.make_job_count_df(path<span class="op">=</span><span class="st">"data/run_results.csv"</span>, ...)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Call the function to generate the plot</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>fig_monthly_calls <span class="op">=</span> job_calcs.plot_monthly_calls(</span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>    call_df,</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>    historical_monthly_job_data_path<span class="op">=</span><span class="st">"historical_data/historical_monthly_totals_all_calls.csv"</span>,</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ... other plot options ...</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Display the figure using Streamlit</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>st.plotly_chart(fig_monthly_calls)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
+</ul>
+<p><strong>Under the Hood: The Analysis Pipeline</strong></p>
+<p>When you click “Run Simulation” and it finishes, a sequence of processing steps leads to the results you see:</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">sequenceDiagram
+    participant App as Streamlit App (app/model.py)
+    participant Collator as Result Collator (Ch 7)
+    participant VisUtil as Utilisation Calcs (visualisation/*)
+    participant VisJobs as Job Count Calcs (visualisation/*)
+    participant Plotly as Plotting Library
+
+    Note over App, Collator: Simulation Finished
+    App-&gt;&gt;Collator: collateRunResults()
+    Collator--&gt;&gt;App: run_results.csv ready
+    Note over App: Load run_results.csv into DataFrame
+
+    App-&gt;&gt;VisUtil: Calculate Utilisation(results_df)
+    VisUtil-&gt;&gt;VisUtil: Load historical util data (CSV)
+    VisUtil-&gt;&gt;VisUtil: Process data (Pandas: filter, group, calc durations)
+    VisUtil--&gt;&gt;App: Return Utilisation KPIs &amp; Tables
+
+    App-&gt;&gt;VisJobs: Generate Monthly Jobs Plot(results_df)
+    VisJobs-&gt;&gt;VisJobs: Load historical job counts (CSV)
+    VisJobs-&gt;&gt;VisJobs: Process data (Pandas: filter, group, count, average)
+    VisJobs-&gt;&gt;Plotly: Create Plotly figure with sim &amp; historical data
+    Plotly--&gt;&gt;VisJobs: Return Figure Object
+    VisJobs--&gt;&gt;App: Return Figure Object
+
+    Note over App: Display results in tabs
+    App-&gt;&gt;App: Display KPIs (st.metric(utilisation_kpi))
+    App-&gt;&gt;App: Display Plots (st.plotly_chart(jobs_figure))
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+<p>Essentially, the scripts in the <code>visualisation/</code> folder act as specialized calculators and chart generators. They take the raw simulation log, perform specific analyses using <code>pandas</code>, often incorporate historical data for context, and produce outputs (numbers, tables, <code>plotly</code> figures) that the main Streamlit application (<code>app/model.py</code>) can then easily display.</p>
+<p><strong>Conclusion</strong></p>
+<p>The Results Processing &amp; Visualization component is the crucial final step that transforms the raw output of our complex simulation into understandable information. By calculating key metrics like resource utilization and job counts, comparing them against historical benchmarks, and generating clear plots and tables, it allows users to effectively interpret the simulation’s findings directly within the <a href="./01_web_application_interface__streamlit__.html">Web Application Interface (Streamlit)</a>. This enables informed decision-making based on the simulation scenarios tested.</p>
+<p>This concludes our tutorial series on the DAA_DES project. We hope this journey through the web interface, the simulation engine, the core entities (patients and resources), resource management, stochastic modeling, the simulation runner, and finally results processing has given you a clear understanding of how this powerful tool works!```</p>
+<hr>
+<p>Generated by <a href="https://github.com/The-Pocket/Tutorial-Codebase-Knowledge">AI Codebase Knowledge Builder</a></p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
