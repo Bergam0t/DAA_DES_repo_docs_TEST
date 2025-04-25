@@ -1,0 +1,32 @@
+project:
+  type: website
+
+website:
+  title: "HEMS Simulation Documentation"
+  navbar:
+    left:
+      - text: "Home"
+        file: index.qmd
+      - text: "Components"
+        menu:
+          - text: "Web Application Interface (Streamlit)"
+            file: 01_web_application_interface__streamlit__.qmd
+          - text: "Simulation Engine (Patient Journey)"
+            file: 02_simulation_engine__patient_journey__.qmd
+          - text: "Patient Entity"
+            file: 03_patient_entity_.qmd
+          - text: "HEMS Resource Entity"
+            file: 04_hems_resource_entity_.qmd
+          - text: "Resource Management (Availability & Allocation)"
+            file: 05_resource_management__availability___allocation__.qmd
+          - text: "Stochastic Modeling (Distributions)"
+            file: 06_stochastic_modeling__distributions__.qmd
+          - text: "Simulation Runner & Parallelization"
+            file: 07_simulation_runner___parallelization_.qmd
+          - text: "Results Processing & Visualization"
+            file: 08_results_processing___visualization_.qmd
+
+format:
+  html:
+    theme: cosmo
+    toc: true

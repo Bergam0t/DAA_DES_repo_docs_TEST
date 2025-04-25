@@ -1,0 +1,313 @@
+# Chapter 5: Resource Management (Availability & Allocation)
+
+In [Chapter 4: HEMS Resource Entity](04_hems_resource_entity_.qmd), we learned about the digital profiles representing each helicopter and car in the simulation – the "players" on our team. But how does the simulation decide which player to send when an emergency call comes in? And how does it know if they are even available?
+
+That's where **Resource Management** comes in. Think of this part of the simulation as the **Dispatch Center** or the **Air Traffic Controller** for our HEMS (Helicopter Emergency Medical Service) units. It keeps track of every resource, knows who is working, who is busy, and who is best suited for the next job.
+
+**What Problem Does This Solve?**
+
+Imagine a 999 call comes in: a serious accident requiring Critical Care (CC). The DAA has several resources: a CC helicopter (H70), an EC (Emergency Care) helicopter (H71), and a CC car (CC72).
+
+*   Which one *should* go? (Probably the CC helicopter, H70, is preferred).
+*   Is H70 actually working right now (on shift)?
+*   Is H70 already busy helping someone else?
+*   Is H70 in the hangar for maintenance?
+*   If H70 isn't available, what's the next best option? (Maybe the CC car, CC72?).
+
+Without a central system managing this, the simulation would be chaos! Resources might get double-booked, or the wrong type of help might be sent. The Resource Management system solves this by acting as the central coordinator for all HEMS resources.
+
+**Meet the Dispatch Center: Key Roles**
+
+The Resource Management system, primarily implemented in the `class_hems_availability.py` file, acts like a dispatcher with a real-time status board. Its main jobs are:
+
+1.  **Tracking Availability:** It constantly knows the status of each [HEMS Resource Entity](04_hems_resource_entity_.qmd).
+    *   **On Shift?** Is the resource scheduled to work at this specific simulation time (based on its rota)?
+    *   **Busy?** Is it currently assigned to another patient (`in_use` flag)?
+    *   **Under Maintenance?** Is it unavailable due to scheduled servicing (`being_serviced` flag)?
+2.  **Determining Preference:** When a [Patient Entity](03_patient_entity_.qmd) needs help, the system looks at the patient's needs (e.g., requires 'CC' level care) and compares them against the available resources. It uses built-in rules (a hierarchy) to decide which *type* of resource is *preferred*. For example:
+    *   For a CC patient, a CC Helicopter is usually preferred over a CC Car.
+    *   A CC Car might be preferred over an EC Helicopter (depending on the specific rules).
+3.  **Allocation:** If a suitable and available resource is found based on the preference rules, the system "allocates" or assigns it to the patient.
+    *   It marks the resource as `in_use = True`.
+    *   It records which resource was assigned to the patient.
+4.  **Handling Unavailability:** If the *preferred* resource isn't available, it checks the next best option according to the hierarchy. If *no* suitable resource is available at all, it records that HEMS could not respond.
+5.  **Release:** Once a resource finishes its task (e.g., patient delivered to hospital, returned to base), the system marks it as available again (`in_use = False`) so it can be dispatched to the next call.
+
+**How the Simulation Engine Uses Resource Management**
+
+Remember the [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd)? When it creates a new patient, it needs to ask the Resource Management system if help is available.
+
+This happens inside the `generate_patient` function in `des_hems.py`:
+
+```python
+# In des_hems.py (simplified 'generate_patient' function)
+
+# ... patient 'pt' is created and details like pt.hems_cc_or_ec are set ...
+
+# Ask Resource Management (self.hems_resources) for a resource
+# The type of allocation function depends on the patient's needs (REG vs CC/EC)
+if pt.hems_cc_or_ec == 'REG':
+    # Ask for a resource suitable for a 'Regular' case
+    hems_res_list: list = yield self.hems_resources.allocate_regular_resource(pt)
+else:
+    # Ask for a resource suitable for a 'CC' or 'EC' case
+    hems_res_list: list = yield self.hems_resources.allocate_resource(pt)
+
+# The result is a list: [Allocated HEMS Resource object or None, reason_code, secondary_resource or None]
+hems_allocation = hems_res_list[0] # The main HEMS object if allocated, otherwise None
+allocation_reason = hems_res_list[1] # Text describing why this resource was chosen (or why none)
+
+# Add the reason to our results log
+self.add_patient_result_row(pt, allocation_reason, "resource_preferred_outcome")
+
+if hems_allocation is not None:
+    # SUCCESS! A resource was found. Start the patient's journey.
+    self.env.process(self.patient_journey(hems_allocation, pt, hems_res_list[2]))
+    # Record which resource was used
+    self.add_patient_result_row(pt, hems_allocation.callsign, "resource_use")
+else:
+    # FAILURE! No suitable HEMS resource was available right now.
+    self.add_patient_result_row(pt, "No HEMS available", "queue")
+    # The patient journey might proceed differently (e.g., handled by land ambulance only)
+    # In this simplified example, we might just end their journey here.
+```
+
+**Explanation:**
+
+1.  The code first determines if the patient needs 'REG' care or higher ('CC'/'EC').
+2.  It then calls the appropriate function from the `self.hems_resources` object (which is an instance of the `HEMSAvailability` class from `class_hems_availability.py`). It passes the `pt` (Patient Entity) object, which contains the patient's needs.
+3.  The `yield` keyword pauses the patient's process while Resource Management figures out the allocation.
+4.  Resource Management returns a list (`hems_res_list`). The most important part is the first item (`hems_allocation`):
+    *   If it's a [HEMS Resource Entity](04_hems_resource_entity_.qmd) object (like the profile for H70), it means a resource was successfully assigned.
+    *   If it's `None`, it means no suitable resource was free.
+5.  The code then proceeds based on whether a resource was allocated or not.
+
+**Under the Hood: The Dispatcher's Logic (`HEMSAvailability` class)**
+
+Let's peek inside the `class_hems_availability.py` file, where the `HEMSAvailability` class lives. This class manages the pool of resources.
+
+**1. Initialization and Resource Pool:**
+When the simulation starts, `HEMSAvailability` reads the resource details (from files like `HEMS_ROTA.csv`) and creates a [HEMS Resource Entity](04_hems_resource_entity_.qmd) object for each one. It also calculates their maintenance schedules. These objects are stored in a special container called a `simpy.FilterStore`. Think of this store as the dispatcher's cabinet holding all the resource files.
+
+```python
+# In class_hems_availability.py (Simplified __init__ and prep_HEMS_resources)
+import simpy
+import pandas as pd
+from class_hems import HEMS # The blueprint for a resource
+
+class HEMSAvailability():
+    def __init__(self, env, sim_start_date, ...):
+        self.env = env # The simulation environment
+        self.store = simpy.FilterStore(env) # The 'cabinet' for resources
+        self.serviceStore = simpy.FilterStore(env) # A separate cabinet for resources being serviced
+        self.HEMS_resources_list = [] # Temporary list to hold resources before putting in store
+        self.active_callsign_groups = set() # Track busy crews
+        self.active_registrations = set() # Track busy vehicles
+        self.active_callsigns = set() # Track busy callsigns
+
+        # Read data and create resource objects
+        self.prep_HEMS_resources()
+        # Put the created resource objects into the main store
+        self.populate_store()
+        # Perform initial check for servicing
+        # ... daily servicing check setup ...
+
+    def prep_HEMS_resources(self):
+        # Read HEMS details from CSV files (Rotas, Registrations, Servicing rules)
+        HEMS_RESOURCES_DATA = pd.read_csv("actual_data/HEMS_ROTA.csv")
+        # ... merge with other data like servicing history ...
+
+        # Loop through each resource defined in the data
+        for index, row in HEMS_RESOURCES_DATA.iterrows():
+            # Calculate the specific maintenance schedule for this vehicle
+            service_df = self.calculate_service_dates(row['registration'], ...) # Complex logic here
+
+            # Create a HEMS object using the blueprint
+            hems_object = HEMS(
+                callsign=row['callsign'],
+                vehicle_type=row['vehicle_type'],
+                category=row['category'],
+                # ... other details like rota times ...
+                servicing_schedule=service_df # Attach the calculated schedule
+            )
+            # Add the new resource object to our list
+            self.HEMS_resources_list.append(hems_object)
+
+    def populate_store(self):
+        # Put each created HEMS object into the SimPy store
+        for h in self.HEMS_resources_list:
+            self.store.put(h)
+```
+
+**2. Checking Availability and Preference (`preferred_resource_available`):**
+This is the core logic for finding the best match. It loops through the resources in the `store` and checks their status and capabilities against the patient's needs.
+
+```python
+# In class_hems_availability.py (Simplified preferred_resource_available for CC/EC)
+
+    def preferred_resource_available(self, pt: Patient) -> list:
+        hems: HEMS | None = None # Placeholder for the best resource found
+        preferred = 999 # Lower number is better preference (1 = best)
+        preferred_lookup = 0 # Code indicating which rule matched
+
+        preferred_care_category = pt.hems_cc_or_ec # e.g., 'CC'
+
+        # Look through all resources currently in the main store (not busy, not servicing)
+        h: HEMS
+        for h in self.store.items:
+            # --- Basic Availability Checks ---
+            # Is the resource currently marked as busy?
+            # Is the crew already assigned to another task? (Check active sets)
+            # Is the vehicle already assigned? (Check active sets)
+            # Is it actually scheduled to be working now?
+            if (h.in_use or
+                h.callsign_group in self.active_callsign_groups or
+                h.registration in self.active_registrations or
+                not h.hems_resource_on_shift(pt.hour, pt.qtr)
+                # NOTE: Servicing check happens daily, moving resources to serviceStore
+               ):
+                continue # Skip this resource, it's not available
+
+            # --- Preference Logic (Example for CC/EC) ---
+            # Rule 1: Preferred care category & Helicopter? (BEST)
+            if h.category == preferred_care_category and h.vehicle_type == "helicopter":
+                hems = h
+                preferred = 1
+                preferred_lookup = 1
+                return [hems, self.resource_allocation_lookup(preferred_lookup)] # Found best, stop searching
+
+            # Rule 2: Preferred care category & Car? (Good)
+            elif h.category == preferred_care_category: # Vehicle type must be Car
+                if preferred > 2: # If we haven't found a better match yet
+                    hems = h
+                    preferred = 2
+                    preferred_lookup = 2
+
+            # Rule 3/4: If patient needs CC, is an EC resource available?
+            elif preferred_care_category == 'CC':
+                if h.category == 'EC' and h.vehicle_type == 'helicopter':
+                   if preferred > 3: hems = h; preferred = 3; preferred_lookup = 3
+                elif h.category == 'EC': # Must be Car
+                   if preferred > 4: hems = h; preferred = 4; preferred_lookup = 4
+
+            # Rule 5/6: If patient needs EC, is a CC resource available? (Similar logic)
+            # ...
+
+        # After checking all resources, return the best one found (or None)
+        if hems is not None:
+            return [hems, self.resource_allocation_lookup(preferred_lookup)]
+        else:
+            return [None, self.resource_allocation_lookup(0)] # Code 0 = No resource available
+```
+
+**3. Allocating the Resource (`allocate_resource`):**
+Once the preferred available resource is identified, this function attempts to "take" it from the store and mark it as busy. It uses SimPy's `store.get()` mechanism.
+
+```python
+# In class_hems_availability.py (Simplified allocate_resource for CC/EC)
+
+    def allocate_resource(self, pt: Patient):
+        resource_event = self.env.event() # SimPy event to signal completion
+
+        def process(): # Inner function to handle the allocation steps
+            # 1. Find the best available resource using the logic above
+            pref_res: list = self.preferred_resource_available(pt)
+            primary_resource = pref_res[0] # The HEMS object or None
+            reason = pref_res[1] # The reason code
+
+            if primary_resource is None:
+                # No resource found, signal failure immediately
+                return resource_event.succeed([None, reason, None])
+
+            # 2. Try to 'get' the chosen resource from the store
+            # This ensures only one process gets it at a time
+            with self.store.get(lambda r: r == primary_resource) as request:
+                result = yield request | self.env.timeout(0.1) # Wait briefly if needed
+
+                if request in result:
+                    # SUCCESS: We got the resource!
+                    primary_resource.in_use = True # Mark it as busy
+                    # Add identifiers to sets tracking active resources
+                    self.active_callsign_groups.add(primary_resource.callsign_group)
+                    self.active_registrations.add(primary_resource.registration)
+                    self.active_callsigns.add(primary_resource.callsign)
+
+                    # Store details in patient object
+                    pt.hems_callsign_group = primary_resource.callsign_group
+                    # ... store other details ...
+
+                    # (Logic to find a secondary resource like a car if needed is omitted for simplicity)
+                    secondary_resource = None
+
+                    # Signal success, returning the allocated resource
+                    return resource_event.succeed([primary_resource, reason, secondary_resource])
+                else:
+                    # FAILURE: Couldn't get the resource (maybe taken by another process?)
+                    # Signal failure
+                    return resource_event.succeed([None, reason, None])
+
+        self.env.process(process()) # Start the allocation process
+        return resource_event # Return the event that will eventually hold the result
+```
+
+**4. Releasing the Resource (`return_resource`):**
+When the `patient_journey` function in `des_hems.py` finishes, it calls this function to put the resource back into the available pool.
+
+```python
+# In class_hems_availability.py (Simplified return_resource)
+
+    def return_resource(self, resource: HEMS, secondary_resource: HEMS | None):
+        # Mark the primary resource as not busy
+        resource.in_use = False
+        # Remove identifiers from the active sets
+        self.active_callsign_groups.discard(resource.callsign_group)
+        self.active_registrations.discard(resource.registration)
+        self.active_callsigns.discard(resource.callsign)
+        # Put the resource object back into the main store
+        self.store.put(resource)
+
+        # (Repeat for secondary resource if applicable)
+        if secondary_resource is not None:
+             secondary_resource.in_use = False
+             # ... remove from active sets ...
+             self.store.put(secondary_resource)
+```
+
+**Simplified Allocation Flow Diagram:**
+
+```{mermaid}
+sequenceDiagram
+    participant Engine as Simulation Engine (des_hems.py)
+    participant ResMgmt as Resource Management (HEMSAvailability)
+    participant Store as SimPy FilterStore
+    participant H70 as HEMS Resource (in Store)
+
+    Engine->>+ResMgmt: allocate_resource(Patient needing 'CC')
+    ResMgmt->>ResMgmt: preferred_resource_available(Patient) finds H70 is best
+    ResMgmt->>+Store: Get H70 resource object
+    Store-->>-ResMgmt: Provide H70 object
+    ResMgmt->>H70: Set in_use = True
+    ResMgmt->>ResMgmt: Add H70 details to active sets
+    ResMgmt-->>-Engine: Return H70 object (Success)
+
+    Note over Engine, H70: Patient Journey Simulation...
+
+    Engine->>+ResMgmt: return_resource(H70)
+    ResMgmt->>H70: Set in_use = False
+    ResMgmt->>ResMgmt: Remove H70 details from active sets
+    ResMgmt->>+Store: Put H70 resource object back
+    Store-->>-ResMgmt: Acknowledge return
+    ResMgmt-->>-Engine: Resource returned
+```
+
+**Conclusion**
+
+The Resource Management system (`HEMSAvailability`) is the crucial dispatch center of our simulation. It maintains a real-time view of all [HEMS Resource Entities](04_hems_resource_entity_.qmd), checking if they are on shift, free, and not under maintenance. When a [Patient Entity](03_patient_entity_.qmd) needs help, it uses a defined hierarchy to select the *preferred* available resource, allocates it, and ensures it's properly released afterwards. This prevents conflicts and ensures the simulation realistically models how resources are assigned based on availability and operational rules.
+
+But how does the simulation decide *how long* each step takes (like mobilisation time or time on scene)? And how does it determine patient characteristics like age or the type of emergency? These aren't fixed numbers; they involve randomness and probability. That's what we'll explore next.
+
+**Next:** [Chapter 6: Stochastic Modeling (Distributions)](06_stochastic_modeling__distributions__.qmd)
+
+---
+
+Generated by [AI Codebase Knowledge Builder](https://github.com/The-Pocket/Tutorial-Codebase-Knowledge)

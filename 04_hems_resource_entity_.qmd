@@ -1,0 +1,178 @@
+# Chapter 4: HEMS Resource Entity
+
+In [Chapter 3: Patient Entity](03_patient_entity_.qmd), we met the "actors" in our simulation – the digital representations of individual emergency cases. But who comes to help these patients? We need the emergency response units themselves!
+
+This chapter introduces the **HEMS Resource Entity**. Think back to a city management game where you have fire trucks, police cars, and ambulances. Each vehicle is a distinct unit with its own capabilities, schedule, and status (available, busy, or in the garage). Our HEMS Resource Entity is just like that – it's the digital version of a specific Devon Air Ambulance helicopter or response car.
+
+**What Problem Does This Solve?**
+
+Imagine trying to run the simulation without knowing which helicopters or cars are available. How would we know if the *right kind* of help (e.g., a Critical Care team) is working at 2 AM? How would we know if Helicopter 'H70' is already busy helping another patient or if it's grounded for maintenance?
+
+We need a way to represent each operational unit individually, tracking its specific details and whether it's ready to respond. The **HEMS Resource Entity** solves this by acting as a detailed profile for each vehicle in our simulated fleet.
+
+**Meet the HEMS Resource Entity: A Vehicle's Profile**
+
+The HEMS Resource Entity is essentially a digital "character sheet" for each helicopter and car available to the service. When the simulation starts, it creates these profiles based on real-world information about the fleet.
+
+The [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd) and, more specifically, the [Resource Management (Availability & Allocation)](05_resource_management__availability___allocation__.qmd) system constantly consult these profiles to make decisions.
+
+**What Information Does a Resource Entity Hold? (Its Attributes)**
+
+Each HEMS Resource Entity "profile" stores key details:
+
+1.  **Callsign (`callsign`):** A unique name for the resource, like "H70" (for a helicopter) or "CC72" (for a Critical Care car). Think of it as the vehicle's radio name.
+2.  **Vehicle Type (`vehicle_type`):** Is it a "Helicopter" or a "Car"? This affects travel times and capabilities.
+3.  **Care Capability (`category`):** What level of medical care can the crew provide? This is often 'CC' (Critical Care) or 'EC' (Emergency Care). This is like knowing if the vehicle has basic first aid or advanced life support equipment and staff.
+4.  **Registration (`registration`):** The unique physical identifier of the vehicle (like a license plate, e.g., "g-daan"). This is important for tracking maintenance.
+5.  **Operational Hours (Rotas):** When is this specific resource scheduled to be active? This is defined by start and end times, which might differ between summer and winter.
+    *   `summer_start`, `summer_end`: Operating hours during summer months.
+    *   `winter_start`, `winter_end`: Operating hours during winter months.
+6.  **Availability Status:** This isn't a single variable but determined by several factors checked by the simulation:
+    *   **Is it on shift right now?** (Checked using the operational hours).
+    *   **Is it currently assigned to a task? (`in_use`):** A flag (True/False) indicating if it's busy with a patient.
+    *   **Is it undergoing maintenance? (`being_serviced`):** A flag indicating if it's unavailable due to scheduled servicing.
+    *   *(Future simulations might add factors like weather grounding)*.
+
+Here's a simple way to visualize a Resource Entity:
+
+```{mermaid}
+graph TD
+    Resource("HEMS Resource Entity") --> Callsign("Callsign: H70");
+    Resource --> Type("Type: Helicopter");
+    Resource --> Capability("Capability: CC");
+    Resource --> Reg("Registration: g-daan");
+    Resource --> Rota("Rota: 07:00-19:00 (Winter)");
+    Resource --> Status("Status: Available?");
+    Status --> OnShift{"On Shift? (Yes)"};
+    Status --> Busy{"Busy? (No)"};
+    Status --> Servicing{"Servicing? (No)"};
+```
+
+**How the Simulation Uses Resource Entities**
+
+The [Resource Management (Availability & Allocation)](05_resource_management__availability___allocation__.qmd) system is the main user of these entities. When a [Patient Entity](03_patient_entity_.qmd) needs help:
+
+1.  **Filtering:** Resource Management looks through all the available HEMS Resource Entities.
+2.  **Checking Shift:** It checks if the resource's `hems_resource_on_shift` status is true for the current simulation time (using its rota details).
+3.  **Checking Status:** It verifies if the resource is *not* `in_use` and *not* `being_serviced`.
+4.  **Matching Needs:** It checks if the resource's `category` (CC/EC) and `vehicle_type` match the patient's needs.
+5.  **Allocation:** If a suitable, available resource is found, Resource Management:
+    *   Assigns it to the patient.
+    *   Sets the resource's `in_use` status to `True`.
+6.  **Release:** Once the resource finishes its task (e.g., patient handed over, returned to base), Resource Management sets its `in_use` status back to `False`, making it available again.
+
+**Under the Hood: The `HEMS` Class**
+
+The blueprint for creating these resource profiles is defined in a Python file called `class_hems.py`. It contains a `class` named `HEMS`. Remember, a class is like a template.
+
+```python
+# In class_hems.py (Simplified Structure)
+import pandas as pd
+from class_ambulance import Ambulance # HEMS is a type of Ambulance
+
+class HEMS(Ambulance): # Inherits from Ambulance class
+    # The __init__ method is called when a new HEMS object is created
+    def __init__(
+            self,
+            callsign: str,
+            vehicle_type: str,
+            category: str, # e.g., 'CC' or 'EC'
+            registration: str,
+            summer_start: str, winter_start: str, # Rota times
+            summer_end: str, winter_end: str,
+            servicing_schedule: pd.DataFrame, # Pre-calculated service dates
+            # ... other parameters ...
+        ):
+        # Call the parent class constructor
+        super().__init__(ambulance_type="HEMS")
+
+        # Store the provided information as attributes of this object
+        self.callsign = callsign
+        self.vehicle_type = vehicle_type
+        self.category = category
+        self.registration = registration
+        self.summer_start = summer_start
+        self.winter_start = winter_start
+        self.summer_end = summer_end
+        self.winter_end = winter_end
+        self.servicing_schedule = servicing_schedule # Holds service start/end dates
+
+        # Status flags (managed by the simulation)
+        self.in_use = False       # Is it currently on a job?
+        self.being_serviced = False # Is it currently in maintenance?
+        # ... other attributes like callsign_group ...
+
+    # Method to check if the resource is working at a given time
+    def hems_resource_on_shift(self, hour: int, season: int) -> bool:
+        # Determines start/end based on season (summer/winter)
+        start = self.summer_start if season in self.summer_season else self.winter_start
+        end = self.summer_end if season in self.summer_season else self.winter_end
+        # Uses a utility function to check if 'hour' is within the start/end range
+        return self.utilityClass.is_time_in_range(int(hour), int(start), int(end))
+
+    # Method to check if unavailable due to servicing at a given time
+    def unavailable_due_to_service(self, current_dt: pd.Timestamp) -> bool:
+        # Loop through the pre-calculated servicing schedule
+        for index, row in self.servicing_schedule.iterrows():
+            # Check if current_dt falls within a service period
+            if row['service_start_date'] <= current_dt <= row['service_end_date']:
+                self.being_serviced = True # Update status flag
+                return True # It is unavailable
+        # If no overlap found
+        self.being_serviced = False # Update status flag
+        return False # It is available (regarding service)
+```
+
+*   **`__init__(...)`:** This special function is the constructor. When a new `HEMS` object is created, this function runs, taking the resource's details (callsign, type, rota, etc.) as input and storing them within the object itself (e.g., `self.callsign = callsign`).
+*   **`hems_resource_on_shift(...)`:** This is a function *belonging* to the HEMS object. Given the current hour and season (quarter of the year), it checks the object's own rota times (`self.summer_start`, etc.) to see if it should be working.
+*   **`unavailable_due_to_service(...)`:** This function checks the object's `servicing_schedule` (which was calculated and stored when the object was created) against the current simulation date and time (`current_dt`) to see if it's in the garage for maintenance. It also updates the `self.being_serviced` flag.
+
+**Creating the Resources**
+
+These `HEMS` objects aren't created one by one in the main simulation logic. Instead, they are typically prepared at the start by the [Resource Management (Availability & Allocation)](05_resource_management__availability___allocation__.qmd) system, specifically within the `HEMSAvailability` class in `class_hems_availability.py`.
+
+```python
+# In class_hems_availability.py (Simplified concept from prep_HEMS_resources)
+
+# Read HEMS details from data files
+HEMS_RESOURCES_DATA = pd.read_csv("actual_data/HEMS_ROTA.csv")
+# ... merge with registration and servicing info ...
+
+# Loop through each row in the data file
+for index, row in HEMS_RESOURCES_DATA.iterrows():
+    # Calculate the specific service schedule for this registration
+    service_df = calculate_service_dates(row['registration'], ...) # Simplified
+
+    # Create a new HEMS object using the class blueprint
+    hems_object = HEMS(
+        callsign=row['callsign'],
+        vehicle_type=row['vehicle_type'],
+        category=row['category'],
+        registration=row['registration'],
+        summer_start=row['summer_start'],
+        # ... other details from the 'row' ...
+        servicing_schedule=service_df
+    )
+    # Add the newly created object to a list of all resources
+    self.HEMS_resources_list.append(hems_object)
+
+# Later, these objects are put into a SimPy Store for management
+# for h in self.HEMS_resources_list:
+#    self.store.put(h)
+```
+
+This setup code reads configuration files (like `actual_data/HEMS_ROTA.csv` which defines the callsigns, types, and rotas) and uses the `HEMS` class as a template to create an object for each resource listed. It also calculates and attaches the specific maintenance schedule (`servicing_schedule`) to each object.
+
+**Conclusion**
+
+The HEMS Resource Entity is the digital twin of a specific helicopter or car in the simulation. It bundles together all the essential information: its name (callsign), type, medical capability, working hours (rota), and unique registration. Crucially, it also holds information about its current status – whether it's busy (`in_use`) or out for maintenance (`being_serviced`).
+
+These resource entities are the fundamental building blocks that the simulation uses to represent the available fleet. Understanding them is key to grasping how the system checks for availability and assigns the right help to patients.
+
+In the next chapter, we'll see exactly how the simulation manages these resources – deciding which one to pick when multiple are available, and how it handles situations when no suitable resource is free.
+
+**Next:** [Chapter 5: Resource Management (Availability & Allocation)](05_resource_management__availability___allocation__.qmd)
+
+---
+
+Generated by [AI Codebase Knowledge Builder](https://github.com/The-Pocket/Tutorial-Codebase-Knowledge)

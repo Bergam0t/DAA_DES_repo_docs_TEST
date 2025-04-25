@@ -1,0 +1,259 @@
+# Chapter 7: Simulation Runner & Parallelization
+
+In [Chapter 6: Stochastic Modeling (Distributions)](06_stochastic_modeling__distributions__.qmd), we learned how the simulation uses randomness (like rolling dice based on real data) to make things like activity times and patient arrivals realistic. But because of this randomness, running the simulation just *once* might give us an unusual result – maybe by pure chance, things went really smoothly, or maybe everything went wrong!
+
+How can we be confident in the results? We need to run the simulation *many* times. But running a complex simulation hundreds of times could take hours or even days! This chapter introduces the **Simulation Runner**, the part of our project that handles actually executing the simulation, and its powerful feature: **Parallelization**, which helps us run multiple simulations much faster.
+
+**What Problem Does This Solve?**
+
+Imagine you want to test the effect of adding a new response car. You run the simulation once for one simulated year. The result shows an average response time of 15 minutes. Is that good? Bad? Lucky? Unlucky? You don't know from a single run.
+
+To get a reliable answer, you need to run the simulation many times (say, 30 times) with the same settings. Each run is called a **replication**. By looking at the results across all 30 replications, you can calculate a trustworthy average response time and see how much it varied (the range of possible outcomes).
+
+But running 30 year-long simulations one after another would be very slow. This is where the Simulation Runner and Parallelization come in:
+
+1.  **Manages Execution:** It provides functions to start and run the [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd).
+2.  **Handles Replications:** It allows you to easily specify *how many* times you want to run the simulation.
+3.  **Speeds Things Up (Parallelization):** It uses the power of modern computers (which often have multiple processing units or "cores") to run several replications *at the same time*, drastically reducing the total waiting time.
+4.  **Gathers Results:** After all the runs are finished, it collects the results from each individual replication and combines them into a single dataset ready for analysis.
+
+**Analogy: Playing Many Games at Once**
+
+Think of our simulation as a complex board game representing the HEMS service.
+
+*   **Single Run:** Playing the game once to see the outcome.
+*   **Multiple Replications:** Playing the game 30 times, writing down the score each time. This gives you a better idea of the average score and the highest/lowest possible scores.
+*   **Simulation Runner:** The person (or program) responsible for setting up the board, playing the game according to the rules, and recording the score.
+*   **Parallelization:** Instead of playing one game at a time, imagine having a room full of identical game boards and players. You tell them all to start playing simultaneously. If you have 4 sets of players, you can finish 4 games in the time it used to take to finish one! The Simulation Runner acts like the coordinator, starting all the games and collecting the scores when they're done.
+
+**How You Use It (via the Web App)**
+
+You typically don't interact with the Simulation Runner code directly. Instead, you use the controls provided in the [Web Application Interface (Streamlit)](01_web_application_interface__streamlit__.qmd).
+
+Remember from Chapter 1, on the "Run Simulation" page (`app/model.py`), you have inputs like:
+
+*   **Number of Runs:** This tells the Simulation Runner how many replications to perform.
+*   **Simulation Duration:** How long each simulation run should last (e.g., 365 days).
+*   The main **"Run Simulation" button.**
+
+When you click the button, the Streamlit app calls functions from the `des_parallel_process.py` file.
+
+```python
+# In app/model.py (simplified example from Chapter 1)
+import streamlit as st
+# Import simulation runner functions
+from des_parallel_process import runSim, parallelProcessJoblib, collateRunResults
+
+# Create a button
+button_run_pressed = st.button("Click to run the simulation")
+
+# Check if the button was clicked
+if button_run_pressed:
+    st.info("Simulation started... please wait.")
+    # Retrieve parameters the user set
+    num_runs = st.session_state.number_of_runs_input # How many replications?
+    sim_days = st.session_state.sim_duration_input
+    # ... other parameters ...
+
+    # If running locally (with multiple CPU cores)...
+    # Use the parallel runner
+    parallelProcessJoblib(
+        total_runs=num_runs,
+        sim_duration=float(sim_days * 24 * 60), # Convert days to minutes
+        # ... pass other parameters ...
+    )
+    # After all parallel runs finish, gather the results
+    collateRunResults()
+
+    st.success("Simulation complete! View results below.")
+    # Code to load results and display them follows...
+```
+
+**Explanation:**
+
+1.  When the button is pressed, the code gets the `num_runs` value you selected.
+2.  It calls `parallelProcessJoblib`, telling it how many runs to perform and passing the simulation settings. This function manages the parallel execution.
+3.  `parallelProcessJoblib` runs the simulation `num_runs` times, potentially using multiple CPU cores simultaneously. Each run saves its results to a temporary file.
+4.  Once all runs managed by `parallelProcessJoblib` are complete, `collateRunResults` is called to merge all the temporary result files into one final file (usually `data/run_results.csv`).
+5.  The Streamlit app then loads this final file to show you the combined results.
+
+**(Note:** The code also includes logic to run simulations sequentially (`runSim` in a loop) if parallel processing isn't available, like on some web hosting platforms.)
+
+**Under the Hood: How Parallel Runs Work**
+
+Let's trace what happens when you click "Run Simulation" for 4 replications on a computer with multiple cores:
+
+1.  **Trigger:** The Streamlit app calls `parallelProcessJoblib(total_runs=4, ...)` in `des_parallel_process.py`.
+2.  **Seed Generation:** The runner generates a list of unique starting "random seeds" (like different starting hands in a card game) for each replication. This ensures that although each run uses randomness ([Stochastic Modeling (Distributions)](06_stochastic_modeling__distributions__.qmd)), the overall set of runs is reproducible if you use the same master seed again.
+3.  **Task Distribution:** The runner uses a library called `joblib`. It creates 4 separate "jobs", one for each replication. Each job is essentially a command: "Run the simulation once (`runSim`) with these parameters and this specific random seed".
+4.  **Parallel Execution:** `joblib` assigns these jobs to available CPU cores. If your computer has 4 cores, all 4 replications might start running at roughly the same time.
+    *   Core 1 runs Replication #1 (`runSim(run=0, random_seed=seed1, ...)`).
+    *   Core 2 runs Replication #2 (`runSim(run=1, random_seed=seed2, ...)`).
+    *   Core 3 runs Replication #3 (`runSim(run=2, random_seed=seed3, ...)`).
+    *   Core 4 runs Replication #4 (`runSim(run=3, random_seed=seed4, ...)`).
+5.  **Individual Run:** Inside each `runSim` call:
+    *   A new [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd) instance is created with the specific parameters and seed.
+    *   The simulation engine runs through the entire patient journey logic, generating calls, assigning resources ([Resource Management (Availability & Allocation)](05_resource_management__availability___allocation__.qmd)), and tracking patients ([Patient Entity](03_patient_entity_.qmd)) and resources ([HEMS Resource Entity](04_hems_resource_entity_.qmd)).
+    *   At the end of the run, `runSim` saves the results (the detailed event log) for *that specific replication* to a temporary file like `data/output_run_0.csv`, `data/output_run_1.csv`, etc.
+6.  **Waiting:** `parallelProcessJoblib` waits until all 4 jobs have finished and saved their temporary files.
+7.  **Collation:** The Streamlit app then calls `collateRunResults()`.
+    *   This function finds all files matching `data/output_run_*.csv`.
+    *   It reads each file into memory.
+    *   It combines them into one large table (DataFrame).
+    *   It saves this combined table to `data/run_results.csv`.
+    *   It deletes the temporary `output_run_*.csv` files.
+8.  **Results Display:** The Streamlit app reads `data/run_results.csv` and displays the aggregated results and visualizations.
+
+**Simplified Diagram:**
+
+```{mermaid}
+sequenceDiagram
+    participant User
+    participant App as Streamlit App (app/model.py)
+    participant Runner as Parallel Runner (parallelProcessJoblib)
+    participant Core1 as CPU Core 1
+    participant Core2 as CPU Core 2
+    participant Collator as Result Collator (collateRunResults)
+
+    User->>App: Set Number of Runs (e.g., 2), Click Run
+    App->>Runner: parallelProcessJoblib(total_runs=2, ...)
+    Runner->>Runner: Generate unique seeds (seed1, seed2)
+    Runner-)Core1: Assign Job 1: runSim(run=0, seed=seed1, ...)
+    Runner-)Core2: Assign Job 2: runSim(run=1, seed=seed2, ...)
+    Note over Core1, Core2: Both runSim execute simultaneously
+    Core1-->>Runner: Run 0 finished, saved output_run_0.csv
+    Core2-->>Runner: Run 1 finished, saved output_run_1.csv
+    Runner-->>App: All parallel runs complete
+    App->>Collator: collateRunResults()
+    Collator->>Collator: Find output_run_0.csv, output_run_1.csv
+    Collator->>Collator: Combine into run_results.csv
+    Collator->>Collator: Delete temporary files
+    Collator-->>App: Collation complete
+    App->>User: Display results from run_results.csv
+```
+
+**Code Glimpses (`des_parallel_process.py`)**
+
+Let's look at the key functions involved:
+
+1.  **`runSim`:** Executes a single simulation replication.
+
+    ```python
+    # In des_parallel_process.py (Simplified)
+    import time
+    import pandas as pd
+    from des_hems import DES_HEMS # The main simulation engine class
+    from utils import Utils # Utility functions
+
+    def runSim(run: int, total_runs: int, sim_duration: int, ..., random_seed: int):
+        """Runs one replication of the simulation."""
+        print(f"{Utils.current_time()}: Starting Run {run+1} of {total_runs} with seed {random_seed}")
+        start_time = time.process_time()
+
+        # 1. Create a simulation model instance for this specific run
+        #    Pass the unique random_seed to ensure it behaves independently
+        daa_model = DES_HEMS(
+            run_number=run,
+            sim_duration=sim_duration,
+            random_seed=random_seed, # Use the specific seed for this run
+            # ... other parameters ...
+        )
+
+        # 2. Execute the simulation engine's main run process
+        daa_model.run()
+
+        # 3. Get the results DataFrame from the model instance
+        results_df = daa_model.results_df
+
+        # 4. Save this run's results to a temporary, unique file
+        output_filename = os.path.join(Utils.RESULTS_FOLDER, f"output_run_{run}.csv")
+        results_df.to_csv(output_filename, index=False)
+
+        print(f"Run {run+1} finished in {time.process_time() - start_time:.2f}s")
+        # This function implicitly returns when done (or could return results_df)
+    ```
+
+2.  **`parallelProcessJoblib`:** Manages running `runSim` multiple times in parallel.
+
+    ```python
+    # In des_parallel_process.py (Simplified)
+    from joblib import Parallel, delayed
+    from numpy.random import SeedSequence # For generating good random seeds
+
+    def parallelProcessJoblib(total_runs: int, sim_duration: int, ..., master_seed=42, n_cores=-1):
+        """Executes multiple simulation runs in parallel using joblib."""
+
+        # 1. Generate a list of unique, independent seeds for each run
+        #    Derived from the master_seed for reproducibility.
+        seed_sequence = SeedSequence(master_seed).spawn(total_runs)
+        run_seeds = [s.generate_state(1)[0] for s in seed_sequence]
+
+        print(f"Starting {total_runs} runs in parallel using {n_cores} cores...")
+
+        # 2. Use joblib's Parallel and delayed functions
+        #    This tells joblib to call 'runSim' for each run number from 0 to total_runs-1
+        #    It automatically distributes these calls across 'n_cores' CPUs.
+        Parallel(n_jobs=n_cores)(
+            delayed(runSim)(
+                run=i, # The current run number (0, 1, 2, ...)
+                total_runs=total_runs,
+                sim_duration=sim_duration,
+                random_seed=run_seeds[i], # Pass the unique seed for this run
+                # ... pass other parameters ...
+            )
+            for i in range(total_runs) # Loop through the number of replications
+        )
+        print("All parallel runs completed.")
+        # This function finishes when all the 'delayed(runSim)' calls are done.
+    ```
+
+3.  **`collateRunResults`:** Gathers the results from the temporary files.
+
+    ```python
+    # In des_parallel_process.py (Simplified)
+    import glob # For finding files matching a pattern
+    import os
+    import pandas as pd
+    from utils import Utils
+
+    def collateRunResults() -> None:
+        """Collates results from temporary run files into a single CSV."""
+        print("Collating results...")
+        # 1. Find all files starting with "output_run_" in the results folder
+        temp_files_pattern = os.path.join(Utils.RESULTS_FOLDER, "output_run_*.csv")
+        temp_files = glob.glob(temp_files_pattern)
+
+        if not temp_files:
+            print("No temporary result files found.")
+            return
+
+        # 2. Read each temporary file into a pandas DataFrame and store in a list
+        list_of_dfs = [pd.read_csv(f) for f in temp_files]
+
+        # 3. Concatenate (stack) all these DataFrames into one big DataFrame
+        combined_df = pd.concat(list_of_dfs, ignore_index=True)
+
+        # 4. Save the combined DataFrame to the final results file
+        final_output_path = Utils.RUN_RESULTS_CSV # e.g., "data/run_results.csv"
+        combined_df.to_csv(final_output_path, index=False)
+        print(f"Combined results saved to {final_output_path}")
+
+        # 5. Clean up: Delete the temporary files
+        for f in temp_files:
+            os.remove(f)
+        print("Temporary files removed.")
+    ```
+
+**Conclusion**
+
+The Simulation Runner is the mechanism that actually executes our simulation model. Because our model includes randomness ([Stochastic Modeling (Distributions)](06_stochastic_modeling__distributions__.qmd)), running it just once isn't enough. The runner allows us to perform multiple **replications**.
+
+Crucially, it supports **parallelization**, using `joblib` to run many replications simultaneously on different CPU cores. This dramatically speeds up the process of gathering enough data for reliable analysis. Finally, helper functions like `collateRunResults` merge the outputs from all these parallel runs into a single, tidy dataset.
+
+Now that we have this combined dataset containing results from potentially many simulation runs, how do we make sense of it all? How do we calculate key metrics and create informative charts? That's the focus of our final chapter.
+
+**Next:** [Chapter 8: Results Processing & Visualization](08_results_processing___visualization__.qmd)
+
+---
+
+Generated by [AI Codebase Knowledge Builder](https://github.com/The-Pocket/Tutorial-Codebase-Knowledge)

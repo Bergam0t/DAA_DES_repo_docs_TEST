@@ -1,0 +1,229 @@
+# Chapter 6: Stochastic Modeling (Distributions)
+
+In [Chapter 5: Resource Management (Availability & Allocation)](05_resource_management__availability___allocation__.qmd), we saw how the simulation acts like a dispatcher, assigning available helicopters and cars to incoming emergencies. But when a resource *is* assigned, how does the simulation know how long things will take? How long to get ready (mobilisation)? How long to fly to the scene? How long will the crew spend treating the patient?
+
+**The Problem: The Real World is Messy and Unpredictable**
+
+Imagine we set the simulation so that mobilisation *always* takes exactly 5 minutes, flying to the scene *always* takes 12 minutes, and time on scene is *always* 25 minutes. This might be easy to program, but it's not realistic!
+
+In reality:
+*   Sometimes crews mobilise faster, sometimes slower.
+*   Flight times depend on wind, exact location, and air traffic.
+*   Time on scene varies hugely depending on the patient's condition and the complexity of the incident.
+*   Calls don't arrive like clockwork; sometimes many come close together, sometimes there are long quiet periods.
+*   Patients aren't all the same; they have different ages, conditions, etc.
+
+If we use fixed numbers, our simulation won't accurately reflect the variability and randomness of the real world. The results might look too neat and predictable, potentially leading to wrong conclusions about resource needs or performance.
+
+**The Solution: Using Loaded Dice (Based on Reality!)**
+
+This is where **Stochastic Modeling** comes in. "Stochastic" just means involving randomness or probability. Instead of fixed values, we use **statistical distributions** to model key parameters.
+
+Think of it like using **loaded dice** in our simulation game. But instead of loading them unfairly, we load them based on **real-world statistics** gathered from historical data.
+
+*   Instead of mobilisation *always* being 5 minutes, the simulation "rolls the dice" and gets a value like 4.2 minutes, 5.8 minutes, or maybe even 7.1 minutes.
+*   These random values aren't completely chaotic; they follow a specific pattern (a distribution) that matches what we've observed in the past. Maybe most mobilisations are around 5 minutes, but some are shorter and some are longer, following a sort of bell curve.
+
+This introduces realistic variability and makes the simulation behave much more like the actual HEMS system.
+
+**What Are Distributions?**
+
+A statistical distribution is just a mathematical way to describe the likelihood of different outcomes. Some common examples:
+
+*   **Normal Distribution (Bell Curve):** Many values cluster around the average, with fewer values further away (e.g., human height).
+*   **Exponential Distribution:** Often used for time between events; short times are common, long times are rare (e.g., time until the next customer arrives).
+*   **Uniform Distribution:** Every value within a range is equally likely (e.g., rolling a standard fair die).
+*   **Poisson Distribution:** Used for counting events in a fixed time (e.g., number of calls per hour).
+
+Our simulation doesn't need to know the complex math behind these. It just needs to know *which* distribution to use for a specific variable and what the *parameters* of that distribution are (e.g., for a normal distribution, the average and the spread).
+
+**Where Are Distributions Used in DAA_DES?**
+
+We use distributions derived from historical data for many key aspects:
+
+1.  **Inter-arrival Times:** How long until the next emergency call arrives? This often follows patterns based on the time of day and day of the week. (`des_hems.py` uses logic based on `distribution_data/hourly_arrival_by_qtr_probs.csv` and probabilities).
+2.  **Activity Durations:** How long does each stage of the patient journey take?
+    *   Time to allocate resource (`time_allocation`)
+    *   Time to get mobile (`time_mobile`)
+    *   Time to reach the scene (`time_to_scene`)
+    *   Time spent on scene (`time_on_scene`)
+    *   Time to fly/drive to hospital (`time_to_hospital`)
+    *   Time until the resource is clear/available again (`time_to_clear`)
+    These are looked up and sampled primarily by the `Utils.activity_time` function in `utils.py`, using definitions from `distribution_data/activity_time_distributions.txt`.
+3.  **Patient Characteristics:**
+    *   **AMPDS Code:** What type of emergency is it likely to be, based on the hour? (`Utils.ampds_code_selection` in `utils.py`, using `distribution_data/hour_by_ampds_card_probs.csv`).
+    *   **Age:** How old is the patient, given the type of emergency? (`Utils.age_sampling` in `utils.py`, using `distribution_data/age_distributions.txt`).
+    *   **Sex:** Is the patient male or female, given the type of emergency? (`Utils.sex_selection` in `utils.py`, using `distribution_data/sex_by_ampds_card_probs.csv`).
+    *   **Care Category:** Does the patient need Critical Care (CC) or Emergency Care (EC)? (`Utils.care_category_selection` in `utils.py`).
+
+By using distributions for these, the simulation generates a wide range of plausible scenarios, reflecting real-world randomness.
+
+**Preparing the Distributions: `distribution_fit_utils.py`**
+
+How do we know *which* distribution and parameters to use for, say, 'time on scene' for a helicopter? We analyse historical data!
+
+This is the job of the script `distribution_fit_utils.py`. Think of this script as a **data scientist** that runs *before* the main simulation. Its process is roughly:
+
+1.  **Load Data:** Read a large dataset of past HEMS incidents (e.g., from `external_data/clean_daa_import.csv`).
+2.  **Filter Data:** Select the relevant data points (e.g., all 'time on scene' values for helicopter incidents where the patient was conveyed).
+3.  **Fit Distributions:** Use a statistical library (like `Fitter`) to try fitting various standard distributions (Normal, Exponential, Gamma, etc.) to the selected data.
+4.  **Choose Best Fit:** The library helps determine which distribution provides the "best fit" to the historical data.
+5.  **Save Results:** Save the name of the best-fitting distribution and its calculated parameters (e.g., for a Gamma distribution, the shape 'a' and scale 'scale' parameters) into configuration files.
+
+These resulting configuration files are typically stored in the `distribution_data/` folder. For example:
+
+*   `distribution_data/activity_time_distributions.txt`: Stores the best distributions for mobilisation time, scene time, etc., often broken down by vehicle type and outcome.
+*   `distribution_data/age_distributions.txt`: Stores the best distributions for patient age, broken down by the type of emergency (AMPDS code).
+*   Various `.csv` files storing probabilities (e.g., `hour_by_ampds_card_probs.csv`).
+
+**Important:** You usually don't need to run `distribution_fit_utils.py` yourself unless the historical data changes significantly or you want to re-analyse it. The pre-calculated files in `distribution_data/` allow the main simulation to run.
+
+**How the Simulation Uses the Prepared Distributions**
+
+The [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd) relies heavily on helper functions within `utils.py` to get these random values. Let's look at a key example: getting an activity duration.
+
+Inside the `patient_journey` function in `des_hems.py`, you see lines like this:
+
+```python
+# In des_hems.py (simplified 'patient_journey' function)
+
+# --- Mobilisation Time ---
+# Ask the Utils class for a realistic mobilisation time
+# based on the vehicle type (e.g., 'helicopter')
+mobilisation_time = self.utils.activity_time(patient.hems_vehicle_type, 'time_mobile')
+# Use simpy to wait for that randomly generated duration
+yield self.env.timeout(mobilisation_time)
+self.add_patient_result_row(patient, "HEMS mobile", "queue") # Record event
+
+# --- Time To Scene ---
+# Ask for a realistic travel time
+tts_time = self.utils.activity_time(patient.hems_vehicle_type, 'time_to_scene')
+yield self.env.timeout(tts_time) # Wait
+self.add_patient_result_row(patient, "HEMS on scene", "queue") # Record event
+
+# --- Time On Scene ---
+# Ask for a realistic time spent on scene
+tos_time = self.utils.activity_time(patient.hems_vehicle_type, 'time_on_scene')
+yield self.env.timeout(tos_time) # Wait
+self.add_patient_result_row(patient, "HEMS leaving scene", "queue") # Record event
+
+# ... other steps ...
+```
+
+This code doesn't contain fixed numbers like `yield self.env.timeout(5)`. Instead, it calls `self.utils.activity_time(...)` each time it needs a duration. This function handles the "dice rolling" based on the pre-calculated distributions.
+
+**Under the Hood: `Utils.activity_time` and `SeededDistribution`**
+
+Let's peek inside `utils.py` to see how `activity_time` (conceptually) works:
+
+```python
+# In utils.py (Conceptual Simplified Version)
+import scipy.stats # Library for statistical distributions
+import numpy as np # Library for numerical operations
+
+class SeededDistribution:
+    # This class holds a specific distribution (like 'gamma')
+    # and its parameters, along with a dedicated random number generator (rng)
+    # to ensure consistent random sequences if needed.
+    def __init__(self, dist_function, rng, **params):
+        self.dist = dist_function(**params) # Create the distribution object
+        self.rng = rng                      # Store the random generator
+
+    def sample(self):
+        # Generate one random number from this specific distribution
+        # using its dedicated generator.
+        return self.dist.rvs(random_state=self.rng)
+
+class Utils:
+    def __init__(self, master_seed=None, ...):
+        # ... (other initialisation) ...
+
+        # 1. Load pre-calculated distributions (from files) when Utils starts
+        # self.activity_time_distr would look something like:
+        # { ('helicopter', 'time_mobile'): SeededDistribution(scipy.stats.gamma, rng1, a=2.5, scale=2.0),
+        #   ('car', 'time_mobile'): SeededDistribution(scipy.stats.lognorm, rng2, s=0.8, scale=4.5),
+        #   ('helicopter', 'time_to_scene'): SeededDistribution(scipy.stats.weibull_min, rng3, c=1.5, scale=10.0),
+        #   ... etc for all combinations ... }
+        self.activity_time_distr = self._load_activity_distributions(master_seed)
+        self.min_max_cache = self._load_min_max_times() # Load acceptable time ranges
+
+    def activity_time(self, vehicle_type: str, time_type: str) -> float:
+        """Gets a realistic, random duration for a specific activity."""
+
+        # 2. Look up the correct SeededDistribution object based on inputs
+        dist_object = self.activity_time_distr.get((vehicle_type, time_type))
+        if dist_object is None:
+            raise ValueError(f"No distribution found for {vehicle_type}, {time_type}")
+
+        # 3. Look up the min/max acceptable times for this activity type
+        min_time, max_time = self.min_max_cache[time_type]
+
+        # 4. Keep sampling until we get a value within the acceptable range
+        sampled_time = -1.0
+        while not (min_time <= sampled_time <= max_time):
+            sampled_time = dist_object.sample() # "Roll the loaded dice"
+
+        # 5. Return the realistic, randomly sampled time
+        return sampled_time
+
+    def _load_activity_distributions(self, master_seed):
+        # This private helper function (simplified):
+        # - Reads 'distribution_data/activity_time_distributions.txt'
+        # - Sets up separate random number generators (RNGs) for each distribution
+        #   (using numpy.random.default_rng and SeedSequence from master_seed)
+        #   for better statistical properties and reproducibility.
+        # - Creates the SeededDistribution objects and stores them in a dictionary.
+        # ... implementation details omitted ...
+        seeded_distributions = {} # Dictionary to hold the results
+        # ... code to read file, create RNGs, create SeededDistribution objects ...
+        return seeded_distributions # Return the dictionary like the example above
+
+    def _load_min_max_times(self):
+        # Reads 'actual_data/upper_allowable_time_bounds.csv' into a lookup dictionary
+        # ... implementation details omitted ...
+        cache = {}
+        # ... code to read file and populate cache ...
+        return cache
+
+    # Other utility functions like age_sampling, sex_selection work similarly:
+    # - Look up probabilities or distribution parameters from loaded data.
+    # - Use a dedicated random number generator to sample or make a choice.
+    # def age_sampling(self, ampds_card: int, max_age: int) -> float: ...
+    # def sex_selection(self, ampds_card: int) -> str: ...
+```
+
+**Key Ideas from the Code:**
+
+1.  **Pre-calculation:** The distributions are figured out beforehand by `distribution_fit_utils.py` and loaded when the `Utils` class starts.
+2.  **Lookup:** The `activity_time` function finds the correct pre-loaded distribution based on the `vehicle_type` and `time_type`.
+3.  **Sampling:** It calls the `sample()` method of the `SeededDistribution` object, which uses a dedicated random number generator (`rng`) and the specific distribution function (`scipy.stats.gamma`, `scipy.stats.lognorm`, etc.) to generate a random value following the historical pattern.
+4.  **Bounds Checking:** It ensures the sampled time is within realistic minimum and maximum limits defined in `actual_data/upper_allowable_time_bounds.csv`.
+5.  **Seeding:** The use of `master_seed`, `SeedSequence`, and `default_rng` ensures that if you run the simulation with the same seed, you will get the *exact same sequence* of "random" numbers, making the simulation reproducible for testing and debugging.
+
+**Simplified Data Flow:**
+
+Here's how the pieces fit together:
+
+```{mermaid}
+graph LR
+    A[Historical Data (CSV)] --> B(distribution_fit_utils.py);
+    B -- Analyzes Data --> C{Distribution Files (distribution_data/)};
+    C -- Loaded at Start --> D(Utils Class);
+    E[Simulation Engine (des_hems.py)] -- Needs Random Value --> D;
+    D -- Looks up Distribution & Samples --> F[Realistic Random Value (e.g., 11.5 min)];
+    E -- Uses Value --> G(Simulation Progresses);
+```
+
+**Conclusion**
+
+Stochastic modeling, using statistical distributions, is essential for making the DAA_DES simulation realistic. Instead of using fixed, unrealistic numbers, the simulation samples values from distributions that are carefully chosen based on historical data. This ensures that factors like call arrival times, activity durations, and patient details vary randomly but follow patterns observed in the real world.
+
+The `distribution_fit_utils.py` script performs the initial analysis of historical data to determine these distributions, saving them to files. The main simulation engine then uses functions in `utils.py` (like `activity_time`) to "roll the dice" according to these pre-calculated distributions whenever it needs a random but realistic value. This randomness is key to exploring the range of possible outcomes and getting meaningful insights from the simulation.
+
+So far, we've seen the interface, the engine directing the flow, the patient and resource entities, how resources are managed, and how randomness is introduced. But how do we actually *run* the simulation, potentially multiple times to account for this randomness, and do it efficiently? That's the focus of the next chapter.
+
+**Next:** [Chapter 7: Simulation Runner & Parallelization](07_simulation_runner___parallelization__.qmd)
+
+---
+
+Generated by [AI Codebase Knowledge Builder](https://github.com/The-Pocket/Tutorial-Codebase-Knowledge)

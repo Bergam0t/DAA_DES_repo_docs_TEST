@@ -1,0 +1,137 @@
+# Chapter 3: Patient Entity
+
+In [Chapter 2: Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd), we learned about the "director" of our simulation – the engine that manages the flow of events and time. Now, let's meet the main "actor" in our simulation play: the **Patient Entity**.
+
+**What's the Point of a Patient Entity?**
+
+Imagine our simulation is like a board game simulating the Devon Air Ambulance service. Each time an emergency call comes in, we need a game piece to represent that specific incident. This piece needs to move around the board (representing the stages of care) and collect properties (like how serious the incident is, the patient's age, and what happened to them).
+
+Without a way to track each individual case, we couldn't simulate the service realistically. We wouldn't know how many people needed help, what kind of help they needed, or whether the service was able to respond effectively to *each specific situation*.
+
+The **Patient Entity** solves this by acting as that unique game piece. It's a digital representation of a single emergency incident requiring potential HEMS (Helicopter Emergency Medical Service) attention.
+
+**Meet the Patient Entity: A Digital Case File**
+
+Think of the Patient Entity as a digital file folder or a character sheet for each specific emergency case in the simulation. It doesn't *do* things on its own, but it *holds* all the important information about one particular incident and the person involved.
+
+The [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd) creates a new Patient Entity whenever a simulated emergency call occurs. It then fills in and updates the information in this "folder" as the simulated incident progresses.
+
+**What Information Does a Patient Entity Hold? (Its Attributes)**
+
+Our Patient Entity "folder" contains several key pieces of information, just like our game piece collects properties:
+
+1.  **Unique ID (`id`):** Just like each game piece might have a number, each Patient Entity gets a unique identification number (e.g., Patient 1, Patient 2, ... Patient 5432). This helps us track each case separately.
+2.  **Arrival Time (`timestamp` when event_type is 'arrival'):** When did the call for this patient come into the simulation? This is recorded as the simulation time (e.g., 125.5 minutes into the simulation).
+3.  **Medical Need:**
+    *   **AMPDS Code (`ampds_card`):** A code representing the type of emergency reported by the caller (e.g., "Chest Pain," "Traffic Accident"). The simulation assigns this based on probabilities ([Stochastic Modeling (Distributions)](06_stochastic_modeling__distributions__.qmd)).
+    *   **Care Category (`hems_cc_or_ec`):** Based on the AMPDS code and other factors, the simulation decides if the patient likely needs Critical Care ('CC'), Emergency Care ('EC'), or Regular ('REG') care from the HEMS team.
+4.  **Demographics:**
+    *   **Age (`age`):** The simulated age of the patient.
+    *   **Sex (`sex`):** The simulated sex of the patient ('male' or 'female'). These are assigned based on patterns observed in real data ([Stochastic Modeling (Distributions)](06_stochastic_modeling__distributions__.qmd)).
+5.  **Journey Tracking & Outcomes:**
+    *   **Journey Stages:** The "folder" keeps track of when key events happened for this patient (e.g., when HEMS was assigned, when they arrived at the scene, when they left the scene).
+    *   **HEMS Result (`hems_result`):** What happened with the HEMS response? (e.g., "Patient Conveyed," "Stand Down En Route," "Landed but no patient contact").
+    *   **Final Outcome (`pt_outcome`):** What was the ultimate outcome for this specific simulated case? (e.g., "Airlifted," "Conveyed by land with DAA," "Deceased").
+    *   **Assigned Resource (`callsign`, `registration`):** If a HEMS resource was assigned, which one was it? (e.g., Helicopter G-DAAN). This links the patient to a specific [HEMS Resource Entity](04_hems_resource_entity_.qmd).
+
+**How the Simulation Uses the Patient Entity**
+
+The [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd) is the one that interacts with the Patient Entity.
+
+1.  **Creation:** When the engine decides a new call occurs, it creates a brand new, empty Patient Entity object.
+    ```python
+    # In des_hems.py (simplified 'generate_patient' function)
+    # ... inside the function when a new call happens ...
+    self.patient_counter += 1
+    # Create a new Patient object, giving it a unique ID
+    pt = Patient(self.patient_counter)
+    # Now 'pt' is our new, mostly empty, patient folder
+    ```
+    This code snippet, found within the `generate_patient` function in `des_hems.py`, shows the creation of a new `Patient` instance (`pt`) using the `Patient` class definition (which we'll look at next).
+
+2.  **Filling Details:** The engine then uses functions (often relying on [Stochastic Modeling (Distributions)](06_stochastic_modeling__distributions__.qmd)) to fill in the initial details.
+    ```python
+    # In des_hems.py (simplified 'generate_patient' function)
+    # Assign details to the 'pt' object
+    pt.hour = hod # Hour the call arrived
+    pt.ampds_card = self.utils.ampds_code_selection(pt.hour) # Assign medical code
+    pt.age = self.utils.age_sampling(pt.ampds_card, 115) # Assign age
+    pt.sex = self.utils.sex_selection(pt.ampds_card) # Assign sex
+    pt.hems_cc_or_ec = self.utils.care_category_selection(pt.ampds_card) # Assign care need
+    # ... other initial details ...
+
+    # Record the arrival event in the results log
+    self.add_patient_result_row(pt, "arrival", "arrival_departure")
+    ```
+    Here, the engine calls utility functions (`self.utils...`) to determine things like the medical code (`ampds_card`) and demographics (`age`, `sex`) and stores them directly into the `pt` object's attributes.
+
+3.  **Updating During Journey:** As the engine guides the patient through their simulated journey (mobilisation, travel, scene time, etc.), it updates the Patient Entity and records events.
+    ```python
+    # In des_hems.py (simplified 'patient_journey' function)
+    # ... after simulating mobilisation time ...
+    mobilisation_time = self.utils.activity_time(patient.hems_vehicle_type, 'time_mobile')
+    yield self.env.timeout(mobilisation_time) # Advance simulation clock
+
+    # Record that the HEMS resource is now mobile for this patient
+    self.add_patient_result_row(patient, "HEMS mobile", "queue")
+
+    # ... later, after simulating travel time ...
+    tts_time = self.utils.activity_time(patient.hems_vehicle_type, 'time_to_scene')
+    yield self.env.timeout(tts_time) # Advance simulation clock
+
+    # Record that HEMS is on scene for this patient
+    self.add_patient_result_row(patient, "HEMS on scene", "queue")
+    ```
+    In the `patient_journey` function, after simulating a time delay (`yield self.env.timeout(...)`), the engine calls `self.add_patient_result_row(...)`. This function takes the `patient` object (our Patient Entity) and the event details ("HEMS mobile", "HEMS on scene") and logs them. This log file becomes the raw data for [Results Processing & Visualization](08_results_processing___visualization__.qmd).
+
+**Under the Hood: The `Patient` Class**
+
+The blueprint for creating these Patient Entity "folders" is defined in a Python file called `class_patient.py`. This file contains a `class` named `Patient`. A class is like a template for creating objects.
+
+```python
+# In class_patient.py (Heavily Simplified Structure)
+
+class Patient:
+    # The __init__ method is called when a new Patient object is created
+    def __init__(self, p_id: int):
+        # --- Core Identifiers ---
+        self.id = p_id          # Unique ID for this patient instance
+        self.time_in_sim = 0    # How long this patient has been in the sim (updated later)
+        self.current_dt = None  # The datetime the patient entered the sim (set later)
+
+        # --- Incident & Medical Details (Filled in by Simulation Engine) ---
+        self.ampds_card = ""    # e.g., "17A1" (Falls)
+        self.hems_cc_or_ec = "REG" # Care Category: 'CC', 'EC', or 'REG'
+        # ... other incident details like location (postcode, lat/long) ...
+
+        # --- Demographics (Filled in by Simulation Engine) ---
+        self.age = 0            # e.g., 65
+        self.sex = "female"     # e.g., "male" or "female"
+
+        # --- Journey & Outcome Tracking (Filled in by Simulation Engine) ---
+        self.hems_case = -1     # Is this potentially a HEMS case? (1=yes, 0=no)
+        self.hems_result = ""   # e.g., "Patient Conveyed", "Stand Down En Route"
+        self.pt_outcome = ""    # e.g., "Airlifted", "Deceased"
+        self.callsign = ""      # Callsign of assigned HEMS resource (e.g., "H70")
+        self.hems_vehicle_type = "" # e.g., "Helicopter", "Car"
+        # ... other tracking variables ...
+
+    # (The Patient class doesn't usually have many methods,
+    #  it mostly just holds data)
+```
+
+When the line `pt = Patient(self.patient_counter)` runs in `des_hems.py`, Python uses this `Patient` class blueprint to create a new object in memory. This object starts with the default values shown above (like `ampds_card = ""`, `age = 0`). The [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd) then accesses and modifies these attributes (like `pt.age = calculated_age`) as the simulation progresses.
+
+**Conclusion**
+
+The Patient Entity is the fundamental unit representing an individual emergency case within the DAA_DES simulation. It acts like a digital file folder or a game piece, holding crucial information like the patient's ID, medical needs, demographics, and the details of their journey through the HEMS system.
+
+While the [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd) *directs* the action, the Patient Entity *stores* the state and characteristics of each case. Understanding this data container is key to seeing how the simulation tracks individual experiences and generates meaningful results.
+
+Now that we've met the patient, let's look at the other crucial actors in our simulation: the emergency resources themselves.
+
+**Next:** [Chapter 4: HEMS Resource Entity](04_hems_resource_entity_.qmd)
+
+---
+
+Generated by [AI Codebase Knowledge Builder](https://github.com/The-Pocket/Tutorial-Codebase-Knowledge)

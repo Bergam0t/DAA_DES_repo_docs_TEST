@@ -1,0 +1,178 @@
+# Chapter 2: Simulation Engine (Patient Journey)
+
+In [Chapter 1: Web Application Interface (Streamlit)](01_web_application_interface__streamlit__.qmd), we saw the control panel that lets you configure and run the DAA_DES simulation. But what actually happens when you click that "Run Simulation" button? How does the simulation *know* what to do?
+
+This chapter introduces the **Simulation Engine**, the heart of our simulation. Think of it as the **director of a play**. The play is the Devon Air Ambulance service operating over a period (like a year). The actors are the individual patient cases that arise. The Simulation Engine directs each patient actor through their scenes (the stages of their interaction with the service), making sure everything happens in the right order and according to the rules.
+
+**What Problem Does This Solve?**
+
+Imagine trying to manually figure out the entire sequence of events for thousands of potential emergency calls over a year. When does a call come in? Is a helicopter needed? Is one available? How long does it take to get ready, fly to the scene, treat the patient, fly to the hospital, and become ready again? This is incredibly complex!
+
+The Simulation Engine automates this entire process. It manages the flow of time and events within the simulated world, allowing us to model the complex interactions between calls, resources, and patient outcomes.
+
+**The Director's Script: Key Roles of the Engine**
+
+The Simulation Engine, primarily implemented in the `des_hems.py` file, handles several crucial tasks:
+
+1.  **Generating Calls:** It creates new patient incidents based on realistic patterns. For example, it knows that more calls tend to happen during certain hours of the day or certain times of the year. It uses probabilities ([Stochastic Modeling (Distributions)](06_stochastic_modeling__distributions__.qmd)) to decide *when* the next call arrives.
+2.  **Assessing the Situation:** For each call, it determines the type of incident (based on simulated medical codes like AMPDS) and decides if a Helicopter Emergency Medical Service (HEMS) resource (like a helicopter or critical care car) is potentially needed.
+3.  **Finding Resources:** If HEMS is needed, it checks if a suitable and available [HEMS Resource Entity](04_hems_resource_entity_.qmd) exists. This involves checking schedules (rotas), current status (is it already on a job? is it being serviced?), and rules for allocation ([Resource Management (Availability & Allocation)](05_resource_management__availability___allocation__.qmd)).
+4.  **Directing the Journey:** If a resource is assigned, the engine guides the [Patient Entity](03_patient_entity_.qmd) and the assigned resource through the key stages of the mission. It uses time delays (again, based on [Stochastic Modeling (Distributions)](06_stochastic_modeling__distributions__.qmd)) for each step:
+    *   **Mobilisation:** Time taken for the crew to get ready and depart.
+    *   **Travel to Scene:** Time taken to fly or drive to the incident location.
+    *   **On Scene:** Time spent assessing and treating the patient.
+    *   **Travel to Hospital:** Time taken to transport the patient (if needed).
+    *   **Handover:** Time spent handing the patient over to hospital staff.
+    *   **Clear:** Time taken to become available for the next call (e.g., returning to base, refuelling).
+5.  **Recording Events:** Throughout this journey, the engine logs every important event and timestamp. This data is crucial for later analysis ([Results Processing & Visualization](08_results_processing___visualization__.qmd)).
+
+**A Patient's Journey: An Example**
+
+Let's follow a simplified journey directed by the Simulation Engine:
+
+1.  **Call Arrives:** The engine decides (based on its internal clock and probability distributions) that a call comes in at `simulation time = 125.5 minutes`.
+2.  **Patient Created:** A new [Patient Entity](03_patient_entity_.qmd) (let's call them Patient 42) is created. The engine assigns them characteristics (like age, type of emergency - maybe a 'CC' or Critical Care case).
+3.  **Resource Check:** The engine asks the [Resource Management (Availability & Allocation)](05_resource_management__availability___allocation__.qmd) system: "Is a Critical Care helicopter available?"
+4.  **Resource Assigned:** Let's say Helicopter H70 is free. The engine assigns H70 to Patient 42.
+5.  **Mobilisation:** The engine looks up how long mobilisation usually takes (say, a random value like 5.2 minutes based on a distribution). It tells the simulation clock to advance by 5.2 minutes. `simulation time = 130.7 minutes`. H70 is now mobile.
+6.  **Travel to Scene:** The engine determines travel time (e.g., 12.1 minutes). Clock advances. `simulation time = 142.8 minutes`. H70 arrives on scene.
+7.  **On Scene:** Engine determines time on scene (e.g., 25.6 minutes). Clock advances. `simulation time = 168.4 minutes`. H70 leaves the scene (perhaps flying to hospital).
+8.  *(...and so on for travel to hospital, handover, and becoming clear...)*
+9.  **Resource Freed:** Once H70 completes its final step (e.g., returning to base), the engine tells the [Resource Management (Availability & Allocation)](05_resource_management__availability___allocation__.qmd) system that H70 is available again.
+
+The engine manages hundreds or thousands of these patient journeys simultaneously, making sure the shared resources (helicopters, cars) are used correctly and that time progresses logically.
+
+**Under the Hood: Code Glimpses**
+
+The core logic resides mainly in `des_hems.py`. We use a Python library called `simpy` to handle the simulation time and events.
+
+*   **Generating Calls (`generate_calls` in `des_hems.py`):**
+    This function runs continuously. It figures out *when* the next call should happen based on time-of-day patterns and random chance.
+
+    ```python
+    # Simplified concept from des_hems.py
+    def generate_calls(self):
+        while self.env.now < (self.sim_duration + self.warm_up_duration):
+            # 1. Figure out time until the next call based on distributions
+            time_to_next_call = self._calculate_interarrival_time() # Uses distributions
+
+            # 2. Tell simpy to pause (wait) for that duration
+            yield self.env.timeout(time_to_next_call)
+
+            # 3. Time's up! Create the patient process
+            # (Get details like day, hour, etc.)
+            dow, hod, _, month, qtr, dt = self.utils.date_time_of_call(...)
+            self.env.process(self.generate_patient(dow, hod, ..., dt))
+    ```
+    The `yield self.env.timeout(...)` is simpy's way of saying "pause this process and advance the simulation clock". `self.env.process(...)` starts a new, independent process for the patient.
+
+*   **Creating a Patient (`generate_patient` in `des_hems.py`):**
+    This function gets called by `generate_calls`. It sets up the patient's details and tries to get a HEMS resource.
+
+    ```python
+    # Simplified concept from des_hems.py
+    def generate_patient(self, dow, hod, ...):
+        self.patient_counter += 1
+        pt = Patient(self.patient_counter) # Create Patient object (Chapter 3)
+
+        # Assign details based on distributions (Chapter 6)
+        pt.hour = hod
+        pt.ampds_card = self.utils.ampds_code_selection(pt.hour)
+        pt.hems_cc_or_ec = self.utils.care_category_selection(pt.ampds_card)
+        # ... other patient details ...
+
+        # Record arrival event
+        self.add_patient_result_row(pt, "arrival", "arrival_departure")
+
+        # Ask Resource Management (Chapter 5) for a HEMS resource
+        # This uses the HEMSAvailability class (Chapter 5)
+        hems_res_list = yield self.hems_resources.allocate_resource(pt)
+        hems_allocation = hems_res_list[0] # The actual HEMS object or None
+
+        if hems_allocation is not None:
+            # If successful, start the main journey process
+            self.env.process(self.patient_journey(hems_allocation, pt, ...))
+        else:
+            # If no resource available, handle that (e.g., record it)
+            self.add_patient_result_row(pt, "No HEMS available", "queue")
+    ```
+    This creates a [Patient Entity](03_patient_entity_.qmd), determines their needs, and interacts with the [Resource Management (Availability & Allocation)](05_resource_management__availability___allocation__.qmd) system (`self.hems_resources`). If a resource is found, it kicks off the `patient_journey`.
+
+*   **Simulating the Journey Steps (`patient_journey` in `des_hems.py`):**
+    This function simulates the time delays for each stage of the patient's interaction.
+
+    ```python
+    # Simplified concept from des_hems.py
+    def patient_journey(self, hems_res: HEMS, patient: Patient, ...):
+        try:
+            # --- Mobilisation Time ---
+            mobilisation_time = self.utils.activity_time(patient.hems_vehicle_type, 'time_mobile')
+            yield self.env.timeout(mobilisation_time) # Wait for mobilisation
+            self.add_patient_result_row(patient, "HEMS mobile", "queue") # Record event
+
+            # --- Time To Scene ---
+            tts_time = self.utils.activity_time(patient.hems_vehicle_type, 'time_to_scene')
+            yield self.env.timeout(tts_time) # Wait for travel
+            self.add_patient_result_row(patient, "HEMS on scene", "queue") # Record event
+
+            # --- Time On Scene ---
+            tos_time = self.utils.activity_time(patient.hems_vehicle_type, 'time_on_scene')
+            yield self.env.timeout(tos_time) # Wait while on scene
+            self.add_patient_result_row(patient, "HEMS leaving scene", "queue") # Record event
+
+            # ... other steps like travel to hospital, clear time ...
+
+        finally:
+            # --- Resource Becomes Free ---
+            # VERY important: tell Resource Management the resource is available again
+            if hems_res is not None:
+                self.hems_resources.return_resource(hems_res, ...)
+                self.add_patient_result_row(patient, hems_res.callsign, "resource_use_end")
+    ```
+    Again, `yield self.env.timeout(...)` makes the simulation clock move forward. The `self.add_patient_result_row(...)` function logs what happened and when, building up the data needed for [Results Processing & Visualization](08_results_processing___visualization__.qmd). The `finally` block ensures the resource is always returned.
+
+**How it Fits Together**
+
+Here's a simplified diagram showing the main interactions when a new call arrives:
+
+```{mermaid}
+sequenceDiagram
+    participant GenCalls as generate_calls (Engine)
+    participant GenPat as generate_patient (Engine)
+    participant Pt as Patient Entity (Data)
+    participant ResMgmt as HEMSAvailability (Resource Logic)
+    participant Journey as patient_journey (Engine)
+
+    GenCalls->>GenCalls: Calculate time to next call
+    GenCalls->>+GenPat: Start new patient process()
+    GenPat->>Pt: Create Patient()
+    GenPat->>GenPat: Assign patient details (AMPDS, CC/EC)
+    GenPat->>+ResMgmt: allocate_resource(patient)?
+    ResMgmt-->>-GenPat: Return HEMS Resource (or None)
+    alt Resource Available
+        GenPat->>+Journey: Start patient_journey(HEMS, Patient)
+        Journey->>Journey: yield timeout (mobilisation)
+        Journey->>Journey: Record 'Mobile' event
+        Journey->>Journey: yield timeout (travel to scene)
+        Journey->>Journey: Record 'On Scene' event
+        Journey->>Journey: ... other steps ...
+        Journey->>-ResMgmt: return_resource(HEMS)
+    else No Resource Available
+        GenPat->>GenPat: Record 'No HEMS' event
+    end
+
+```
+
+The Simulation Engine (`des_hems.py` containing `generate_calls`, `generate_patient`, `patient_journey`) acts as the central orchestrator. It creates patients, interacts with the resource management system, and steps through the time-based events of each patient's journey, using data structures like the [Patient Entity](03_patient_entity_.qmd) and rules defined in [Resource Management (Availability & Allocation)](05_resource_management__availability___allocation__.qmd).
+
+**Conclusion**
+
+The Simulation Engine is the core logic that drives the DAA_DES simulation. It acts like a director, generating patient calls based on realistic patterns and guiding each patient (and the assigned HEMS resource) through the stages of their journey – from the initial call, through mobilisation, scene arrival, treatment, and finally becoming clear. It manages simulation time and ensures events happen in the correct sequence, using probabilistic timings defined in [Stochastic Modeling (Distributions)](06_stochastic_modeling__distributions__.qmd). This engine allows us to model the complex, dynamic behaviour of the HEMS system.
+
+Now that we understand how the overall flow is managed, let's look more closely at the main 'actor' in our simulation: the patient.
+
+**Next:** [Chapter 3: Patient Entity](03_patient_entity_.qmd)
+
+---
+
+Generated by [AI Codebase Knowledge Builder](https://github.com/The-Pocket/Tutorial-Codebase-Knowledge)

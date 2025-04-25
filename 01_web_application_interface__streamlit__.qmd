@@ -1,0 +1,180 @@
+# Chapter 1: Web Application Interface (Streamlit)
+
+Welcome to the Devon Air Ambulance Discrete Event Simulation (DAA_DES) project! This project simulates how the Devon Air Ambulance service responds to calls. It's a complex system, but we want everyone, even those who aren't programmers, to be able to use it and understand its results.
+
+Imagine you're a manager at the air ambulance service. You might wonder, "What happens if we add an extra response car? Or change the helicopter shift times?" Answering these questions usually requires deep knowledge of the simulation code. That's where our Web Application Interface comes in!
+
+This chapter introduces the user-friendly interface built with a tool called **Streamlit**. Think of it as the **dashboard and control panel** for our simulation. It hides all the complicated Python code (the "engine") and gives you simple controls like buttons, sliders, and text boxes to configure and run the simulation. It also displays the results clearly using charts and key numbers.
+
+**What Problem Does This Solve?**
+
+Without a graphical interface, users would need to:
+
+1.  Open the Python code files.
+2.  Find the specific lines of code for parameters like helicopter schedules or demand levels.
+3.  Modify the code directly (risking errors!).
+4.  Run the simulation using command-line instructions.
+5.  Manually process the raw output data (often large CSV files) to create charts or calculate metrics.
+
+This is time-consuming and requires programming skills. The Streamlit interface solves this by providing an easy-to-use web application accessible through your browser.
+
+**Meet Streamlit: Your Simulation Control Panel**
+
+Streamlit is a Python library that makes it incredibly easy to create web applications for data science and machine learning projects. For DAA_DES, we use it to build the interactive layer *on top* of the core simulation model.
+
+Here's what the interface allows you to do:
+
+1.  **Configure:** Set up the simulation parameters.
+    *   How many helicopters and cars are available? (`app/setup.py`)
+    *   What are their working hours (rotas)? (`app/setup.py`)
+    *   How many calls should the simulation generate (demand levels)? (`app/setup.py`)
+    *   How long should the simulation run (e.g., 1 year, 3 years)? (`app/setup.py`)
+    *   When should the simulation start? (`app/setup.py`)
+2.  **Run:** Start the simulation with your chosen settings. (`app/model.py`)
+3.  **View:** See the results. (`app/model.py`)
+    *   Key performance metrics (e.g., average response time, resource utilization).
+    *   Charts showing trends (e.g., calls per month, jobs per hour).
+    *   Comparisons with historical data.
+
+**Using the Interface: A Quick Tour**
+
+Getting the simulation running via the interface is straightforward:
+
+1.  **Start the App:** Open your terminal or command prompt, navigate to the project's root directory, and type:
+    ```bash
+    streamlit run app/app.py
+    ```
+    This command tells Streamlit to run the main application file (`app.py`), which will then open a new tab in your web browser.
+
+2.  **Setup Parameters:** Navigate to the "Choose Model Parameters" page (controlled by `app/setup.py`). Here you'll find widgets like sliders and number inputs.
+
+    *Example: Setting the simulation duration using a slider in `app/setup.py` (simplified):*
+    ```python
+    # In app/setup.py (simplified)
+    import streamlit as st
+
+    # Get the current value from session state or use a default
+    default_duration = 365
+    current_duration = st.session_state.get('sim_duration_input', default_duration)
+
+    # Create a slider widget
+    sim_duration_input = st.slider(
+        "Simulation Duration (days)",
+        min_value=1,        # Minimum allowed value
+        max_value=365 * 3,  # Maximum allowed value (3 years)
+        value=current_duration, # The default/current value shown
+        key="key_sim_duration_input" # Unique identifier
+    )
+
+    # When the user changes the slider, update the session state
+    st.session_state.sim_duration_input = sim_duration_input
+
+    st.write(f"You selected {sim_duration_input} days.")
+    ```
+    This code creates an interactive slider. When you move it, Streamlit automatically updates the displayed value and stores your choice (`sim_duration_input`) so the simulation can use it later.
+
+3.  **Run the Simulation:** Go to the "Run Simulation" page (controlled by `app/model.py`). Click the main button to start the simulation.
+
+    *Example: The run button in `app/model.py` (simplified):*
+    ```python
+    # In app/model.py (simplified)
+    import streamlit as st
+    # Import simulation runner functions (explained in later chapters)
+    from des_parallel_process import runSim, parallelProcessJoblib, collateRunResults
+
+    # Create a button
+    button_run_pressed = st.button(
+        "Click to run the simulation",
+        icon=":material/play_circle:"
+    )
+
+    # Check if the button was clicked
+    if button_run_pressed:
+        st.info("Simulation started... please wait.")
+        # Retrieve parameters the user set (from st.session_state)
+        num_runs = st.session_state.number_of_runs_input
+        sim_days = st.session_state.sim_duration_input
+        # ... retrieve other parameters ...
+
+        # Call the backend function to run the simulation
+        # (This function does the actual work, covered in Chapter 7)
+        parallelProcessJoblib(total_runs=num_runs, sim_duration=float(sim_days * 24 * 60))
+        collateRunResults() # Gathers results from runs
+
+        st.success("Simulation complete! View results below.")
+        # Code to display results follows...
+    ```
+    When you click this button, the `if button_run_pressed:` block executes. It retrieves the parameters you set earlier and calls the core simulation functions (like `parallelProcessJoblib`).
+
+4.  **View Results:** Once the simulation finishes, the `app/model.py` page will automatically update to show various tabs containing metrics, charts, and tables summarizing the outcomes.
+
+    *Example: Displaying a metric in `app/model.py` (simplified):*
+    ```python
+    # In app/model.py, after simulation runs (simplified)
+    import streamlit as st
+    import pandas as pd
+    import _app_utils # Our custom utility functions
+
+    # Assume 'results_all_runs' DataFrame is loaded after simulation
+    # results_all_runs = pd.read_csv("data/run_results.csv")
+
+    # Calculate a simple metric (e.g., average number of patients per run)
+    avg_patients = results_all_runs['P_ID'].nunique() / results_all_runs['run_number'].nunique()
+
+    # Display the metric using Streamlit's st.metric function
+    st.metric(
+        label="Average Patients per Run",
+        value=f"{avg_patients:.1f}" # Format the number
+    )
+
+    # Display a chart (more details in Chapter 8)
+    # fig = create_some_chart(results_all_runs) # Function to make a plot
+    # st.plotly_chart(fig)
+    ```
+    This uses Streamlit's built-in functions (`st.metric`, `st.plotly_chart`) to present the simulation output in an easy-to-understand format.
+
+**Under the Hood: How Streamlit Connects Everything**
+
+While you interact with the simple web page, Streamlit coordinates several actions behind the scenes when you click "Run Simulation":
+
+1.  **Input Gathering:** Streamlit reads the current values from all the widgets (sliders, number inputs, etc.) you configured on the `setup.py` page. These values are stored in Streamlit's session state.
+2.  **Function Call:** The `model.py` script retrieves these parameters from the session state and passes them to the appropriate backend function, typically from `des_parallel_process.py` ([Simulation Runner & Parallelization](07_simulation_runner___parallelization__.qmd)).
+3.  **Simulation Execution:** The backend function runs the core [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd), simulating patient arrivals, resource allocation, and outcomes based on the parameters.
+4.  **Results Generation:** The simulation engine outputs raw data, usually saving it to CSV files (like `run_results.csv`).
+5.  **Data Processing & Display:** The `model.py` script then uses functions (often from `visualisation` scripts or covered in [Results Processing & Visualization](08_results_processing___visualization__.qmd)) to read these CSV files, calculate summary statistics, and create plots.
+6.  **Update Interface:** Finally, Streamlit updates the web page to display these metrics and charts in the results tabs.
+
+Here's a simplified diagram of the flow:
+
+```{mermaid}
+sequenceDiagram
+    participant U as User
+    participant ST as Streamlit App (app/*.py)
+    participant SR as Simulation Runner (des_parallel_process.py)
+    participant SE as Simulation Engine (des_hems.py, etc.)
+    participant RP as Results Processing (visualisation/*)
+
+    U->>ST: Adjust parameters (sliders, etc.)
+    ST->>ST: Store parameters in session state
+    U->>ST: Click "Run Simulation" button
+    ST->>SR: Call run function with parameters
+    SR->>SE: Initiate simulation runs
+    SE-->>SR: Execute simulation logic
+    SR->>RP: Collate raw results (CSV)
+    RP-->>ST: Provide processed data/plots
+    ST->>U: Display results (metrics, charts)
+```
+
+The key takeaway is that the Streamlit code in the `app/` folder acts as a bridge between you (the user) and the complex simulation engine running in the background.
+
+**Conclusion**
+
+The Web Application Interface, built using Streamlit, is the friendly face of the DAA_DES project. It allows anyone to easily configure simulation parameters, run different scenarios, and visualize the results without needing to write or modify any Python code. It acts as the control panel, making the powerful simulation engine accessible.
+
+Now that you understand how to interact with the simulation through its interface, we'll dive into the heart of the system in the next chapter. We'll explore how the simulation actually models the journey of a patient from the initial call to the final outcome.
+
+**Next:** [Chapter 2: Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd)
+
+---
+
+Generated by [AI Codebase Knowledge Builder](https://github.com/The-Pocket/Tutorial-Codebase-Knowledge)
