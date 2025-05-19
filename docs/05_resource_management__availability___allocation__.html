@@ -222,8 +222,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#what-problem-does-this-solve" id="toc-what-problem-does-this-solve" class="nav-link" data-scroll-target="#what-problem-does-this-solve">What Problem Does This Solve?</a></li>
   <li><a href="#meet-the-dispatch-center-key-roles" id="toc-meet-the-dispatch-center-key-roles" class="nav-link" data-scroll-target="#meet-the-dispatch-center-key-roles">Meet the Dispatch Center: Key Roles</a></li>
-  <li><a href="#how-the-simulation-engine-uses-resource-management" id="toc-how-the-simulation-engine-uses-resource-management" class="nav-link" data-scroll-target="#how-the-simulation-engine-uses-resource-management">How the Simulation Engine Uses Resource Management</a></li>
-  <li><a href="#explanation" id="toc-explanation" class="nav-link" data-scroll-target="#explanation">Explanation:</a></li>
+  <li><a href="#how-the-simulation-engine-uses-resource-management" id="toc-how-the-simulation-engine-uses-resource-management" class="nav-link" data-scroll-target="#how-the-simulation-engine-uses-resource-management">How the Simulation Engine Uses Resource Management</a>
+  <ul class="collapse">
+  <li><a href="#explanation" id="toc-explanation" class="nav-link" data-scroll-target="#explanation">Explanation</a></li>
+  </ul></li>
   <li><a href="#under-the-hood-the-dispatchers-logic-hemsavailability-class" id="toc-under-the-hood-the-dispatchers-logic-hemsavailability-class" class="nav-link" data-scroll-target="#under-the-hood-the-dispatchers-logic-hemsavailability-class">Under the Hood: The Dispatcher’s Logic (<code>HEMSAvailability</code> class)</a>
   <ul class="collapse">
   <li><a href="#initialization-and-resource-pool" id="toc-initialization-and-resource-pool" class="nav-link" data-scroll-target="#initialization-and-resource-pool">1. Initialization and Resource Pool:</a></li>
@@ -316,9 +318,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span>.add_patient_result_row(pt, <span class="st">"No HEMS available"</span>, <span class="st">"queue"</span>)</span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The patient journey might proceed differently (e.g., handled by land ambulance only)</span></span>
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># In this simplified example, we might just end their journey here.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="explanation" class="level2">
-<h2 class="anchored" data-anchor-id="explanation">Explanation:</h2>
+<section id="explanation" class="level3">
+<h3 class="anchored" data-anchor-id="explanation">Explanation</h3>
 <ol type="1">
 <li>The code first determines if the patient needs ‘REG’ care or higher (‘CC’/‘EC’).</li>
 <li>It then calls the appropriate function from the <code>self.hems_resources</code> object (which is an instance of the <code>HEMSAvailability</code> class from <code>class_hems_availability.py</code>). It passes the <code>pt</code> (Patient Entity) object, which contains the patient’s needs.</li>
@@ -330,6 +331,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul></li>
 <li>The code then proceeds based on whether a resource was allocated or not.</li>
 </ol>
+</section>
 </section>
 <section id="under-the-hood-the-dispatchers-logic-hemsavailability-class" class="level2">
 <h2 class="anchored" data-anchor-id="under-the-hood-the-dispatchers-logic-hemsavailability-class">Under the Hood: The Dispatcher’s Logic (<code>HEMSAvailability</code> class)</h2>

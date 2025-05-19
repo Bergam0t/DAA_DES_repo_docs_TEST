@@ -72,7 +72,7 @@ else:
     # In this simplified example, we might just end their journey here.
 ```
 
-## Explanation:
+### Explanation
 
 1.  The code first determines if the patient needs 'REG' care or higher ('CC'/'EC').
 2.  It then calls the appropriate function from the `self.hems_resources` object (which is an instance of the `HEMSAvailability` class from `class_hems_availability.py`). It passes the `pt` (Patient Entity) object, which contains the patient's needs.
