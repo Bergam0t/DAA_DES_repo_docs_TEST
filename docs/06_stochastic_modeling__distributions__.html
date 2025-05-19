@@ -218,7 +218,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#chapter-6-stochastic-modeling-distributions" id="toc-chapter-6-stochastic-modeling-distributions" class="nav-link active" data-scroll-target="#chapter-6-stochastic-modeling-distributions">Chapter 6: Stochastic Modeling (Distributions)</a></li>
+  <li><a href="#chapter-6-stochastic-modeling-distributions" id="toc-chapter-6-stochastic-modeling-distributions" class="nav-link active" data-scroll-target="#chapter-6-stochastic-modeling-distributions">Chapter 6: Stochastic Modeling (Distributions)</a>
+  <ul class="collapse">
+  <li><a href="#the-problem-the-real-world-is-messy-and-unpredictable" id="toc-the-problem-the-real-world-is-messy-and-unpredictable" class="nav-link" data-scroll-target="#the-problem-the-real-world-is-messy-and-unpredictable">The Problem: The Real World is Messy and Unpredictable</a></li>
+  <li><a href="#the-solution-using-loaded-dice-based-on-reality" id="toc-the-solution-using-loaded-dice-based-on-reality" class="nav-link" data-scroll-target="#the-solution-using-loaded-dice-based-on-reality">The Solution: Using Loaded Dice (Based on Reality!)</a></li>
+  <li><a href="#what-are-distributions" id="toc-what-are-distributions" class="nav-link" data-scroll-target="#what-are-distributions">What Are Distributions?</a></li>
+  <li><a href="#where-are-distributions-used-in-daa_des" id="toc-where-are-distributions-used-in-daa_des" class="nav-link" data-scroll-target="#where-are-distributions-used-in-daa_des">Where Are Distributions Used in DAA_DES?</a></li>
+  <li><a href="#preparing-the-distributions-distribution_fit_utils.py" id="toc-preparing-the-distributions-distribution_fit_utils.py" class="nav-link" data-scroll-target="#preparing-the-distributions-distribution_fit_utils.py">Preparing the Distributions: <code>distribution_fit_utils.py</code></a></li>
+  <li><a href="#how-the-simulation-uses-the-prepared-distributions" id="toc-how-the-simulation-uses-the-prepared-distributions" class="nav-link" data-scroll-target="#how-the-simulation-uses-the-prepared-distributions">How the Simulation Uses the Prepared Distributions</a></li>
+  <li><a href="#key-ideas-from-the-code" id="toc-key-ideas-from-the-code" class="nav-link" data-scroll-target="#key-ideas-from-the-code">Key Ideas from the Code:</a></li>
+  <li><a href="#simplified-data-flow" id="toc-simplified-data-flow" class="nav-link" data-scroll-target="#simplified-data-flow">Simplified Data Flow:</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -231,7 +242,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="chapter-6-stochastic-modeling-distributions" class="level1">
 <h1>Chapter 6: Stochastic Modeling (Distributions)</h1>
 <p>In <a href="./05_resource_management__availability___allocation__.html">Chapter 5: Resource Management (Availability &amp; Allocation)</a>, we saw how the simulation acts like a dispatcher, assigning available helicopters and cars to incoming emergencies. But when a resource <em>is</em> assigned, how does the simulation know how long things will take? How long to get ready (mobilisation)? How long to fly to the scene? How long will the crew spend treating the patient?</p>
-<p><strong>The Problem: The Real World is Messy and Unpredictable</strong></p>
+<section id="the-problem-the-real-world-is-messy-and-unpredictable" class="level2">
+<h2 class="anchored" data-anchor-id="the-problem-the-real-world-is-messy-and-unpredictable">The Problem: The Real World is Messy and Unpredictable</h2>
 <p>Imagine we set the simulation so that mobilisation <em>always</em> takes exactly 5 minutes, flying to the scene <em>always</em> takes 12 minutes, and time on scene is <em>always</em> 25 minutes. This might be easy to program, but it’s not realistic!</p>
 <p>In reality:</p>
 <ul>
@@ -242,7 +254,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Patients aren’t all the same; they have different ages, conditions, etc.</li>
 </ul>
 <p>If we use fixed numbers, our simulation won’t accurately reflect the variability and randomness of the real world. The results might look too neat and predictable, potentially leading to wrong conclusions about resource needs or performance.</p>
-<p><strong>The Solution: Using Loaded Dice (Based on Reality!)</strong></p>
+</section>
+<section id="the-solution-using-loaded-dice-based-on-reality" class="level2">
+<h2 class="anchored" data-anchor-id="the-solution-using-loaded-dice-based-on-reality">The Solution: Using Loaded Dice (Based on Reality!)</h2>
 <p>This is where <strong>Stochastic Modeling</strong> comes in. “Stochastic” just means involving randomness or probability. Instead of fixed values, we use <strong>statistical distributions</strong> to model key parameters.</p>
 <p>Think of it like using <strong>loaded dice</strong> in our simulation game. But instead of loading them unfairly, we load them based on <strong>real-world statistics</strong> gathered from historical data.</p>
 <ul>
@@ -250,7 +264,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>These random values aren’t completely chaotic; they follow a specific pattern (a distribution) that matches what we’ve observed in the past. Maybe most mobilisations are around 5 minutes, but some are shorter and some are longer, following a sort of bell curve.</li>
 </ul>
 <p>This introduces realistic variability and makes the simulation behave much more like the actual HEMS system.</p>
-<p><strong>What Are Distributions?</strong></p>
+</section>
+<section id="what-are-distributions" class="level2">
+<h2 class="anchored" data-anchor-id="what-are-distributions">What Are Distributions?</h2>
 <p>A statistical distribution is just a mathematical way to describe the likelihood of different outcomes. Some common examples:</p>
 <ul>
 <li><strong>Normal Distribution (Bell Curve):</strong> Many values cluster around the average, with fewer values further away (e.g., human height).</li>
@@ -259,7 +275,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Poisson Distribution:</strong> Used for counting events in a fixed time (e.g., number of calls per hour).</li>
 </ul>
 <p>Our simulation doesn’t need to know the complex math behind these. It just needs to know <em>which</em> distribution to use for a specific variable and what the <em>parameters</em> of that distribution are (e.g., for a normal distribution, the average and the spread).</p>
-<p><strong>Where Are Distributions Used in DAA_DES?</strong></p>
+</section>
+<section id="where-are-distributions-used-in-daa_des" class="level2">
+<h2 class="anchored" data-anchor-id="where-are-distributions-used-in-daa_des">Where Are Distributions Used in DAA_DES?</h2>
 <p>We use distributions derived from historical data for many key aspects:</p>
 <ol type="1">
 <li><strong>Inter-arrival Times:</strong> How long until the next emergency call arrives? This often follows patterns based on the time of day and day of the week. (<code>des_hems.py</code> uses logic based on <code>distribution_data/hourly_arrival_by_qtr_probs.csv</code> and probabilities).</li>
@@ -281,7 +299,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul></li>
 </ol>
 <p>By using distributions for these, the simulation generates a wide range of plausible scenarios, reflecting real-world randomness.</p>
-<p><strong>Preparing the Distributions: <code>distribution_fit_utils.py</code></strong></p>
+</section>
+<section id="preparing-the-distributions-distribution_fit_utils.py" class="level2">
+<h2 class="anchored" data-anchor-id="preparing-the-distributions-distribution_fit_utils.py">Preparing the Distributions: <code>distribution_fit_utils.py</code></h2>
 <p>How do we know <em>which</em> distribution and parameters to use for, say, ‘time on scene’ for a helicopter? We analyse historical data!</p>
 <p>This is the job of the script <code>distribution_fit_utils.py</code>. Think of this script as a <strong>data scientist</strong> that runs <em>before</em> the main simulation. Its process is roughly:</p>
 <ol type="1">
@@ -298,7 +318,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Various <code>.csv</code> files storing probabilities (e.g., <code>hour_by_ampds_card_probs.csv</code>).</li>
 </ul>
 <p><strong>Important:</strong> You usually don’t need to run <code>distribution_fit_utils.py</code> yourself unless the historical data changes significantly or you want to re-analyse it. The pre-calculated files in <code>distribution_data/</code> allow the main simulation to run.</p>
-<p><strong>How the Simulation Uses the Prepared Distributions</strong></p>
+</section>
+<section id="how-the-simulation-uses-the-prepared-distributions" class="level2">
+<h2 class="anchored" data-anchor-id="how-the-simulation-uses-the-prepared-distributions">How the Simulation Uses the Prepared Distributions</h2>
 <p>The <a href="./02_simulation_engine__patient_journey__.html">Simulation Engine (Patient Journey)</a> relies heavily on helper functions within <code>utils.py</code> to get these random values. Let’s look at a key example: getting an activity duration.</p>
 <p>Inside the <code>patient_journey</code> function in <code>des_hems.py</code>, you see lines like this:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In des_hems.py (simplified 'patient_journey' function)</span></span>
@@ -400,7 +422,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>    <span class="co"># - Use a dedicated random number generator to sample or make a choice.</span></span>
 <span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>    <span class="co"># def age_sampling(self, ampds_card: int, max_age: int) -&gt; float: ...</span></span>
 <span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>    <span class="co"># def sex_selection(self, ampds_card: int) -&gt; str: ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Key Ideas from the Code:</strong></p>
+</section>
+<section id="key-ideas-from-the-code" class="level2">
+<h2 class="anchored" data-anchor-id="key-ideas-from-the-code">Key Ideas from the Code:</h2>
 <ol type="1">
 <li><strong>Pre-calculation:</strong> The distributions are figured out beforehand by <code>distribution_fit_utils.py</code> and loaded when the <code>Utils</code> class starts.</li>
 <li><strong>Lookup:</strong> The <code>activity_time</code> function finds the correct pre-loaded distribution based on the <code>vehicle_type</code> and <code>time_type</code>.</li>
@@ -408,7 +432,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Bounds Checking:</strong> It ensures the sampled time is within realistic minimum and maximum limits defined in <code>actual_data/upper_allowable_time_bounds.csv</code>.</li>
 <li><strong>Seeding:</strong> The use of <code>master_seed</code>, <code>SeedSequence</code>, and <code>default_rng</code> ensures that if you run the simulation with the same seed, you will get the <em>exact same sequence</em> of “random” numbers, making the simulation reproducible for testing and debugging.</li>
 </ol>
-<p><strong>Simplified Data Flow:</strong></p>
+</section>
+<section id="simplified-data-flow" class="level2">
+<h2 class="anchored" data-anchor-id="simplified-data-flow">Simplified Data Flow:</h2>
 <p>Here’s how the pieces fit together:</p>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
@@ -416,19 +442,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p></p><figure class="figure"><p></p>
 <div>
 <pre class="mermaid mermaid-js">graph LR
-    A[Historical Data (CSV)] --&gt; B(distribution_fit_utils.py);
-    B -- Analyzes Data --&gt; C{Distribution Files (distribution_data/)};
-    C -- Loaded at Start --&gt; D(Utils Class);
-    E[Simulation Engine (des_hems.py)] -- Needs Random Value --&gt; D;
-    D -- Looks up Distribution &amp; Samples --&gt; F[Realistic Random Value (e.g., 11.5 min)];
-    E -- Uses Value --&gt; G(Simulation Progresses);
+    A["Historical Data - CSV"] --&gt; B("distribution_fit_utils.py");
+    B -- Analyzes Data --&gt; C{"Distribution Files distribution_data/"};
+    C -- Loaded at Start --&gt; D("Utils Class");
+    E["Simulation Engine - des_hems.py"] -- Needs Random Value --&gt; D;
+    D -- Looks up Distribution &amp; Samples --&gt; F["Realistic Random Value e.g., 11.5 min"];
+    E -- Uses Value --&gt; G("Simulation Progresses");
 </pre>
 </div>
 <p></p></figure><p></p>
 </div>
 </div>
 </div>
-<p><strong>Conclusion</strong></p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>Stochastic modeling, using statistical distributions, is essential for making the DAA_DES simulation realistic. Instead of using fixed, unrealistic numbers, the simulation samples values from distributions that are carefully chosen based on historical data. This ensures that factors like call arrival times, activity durations, and patient details vary randomly but follow patterns observed in the real world.</p>
 <p>The <code>distribution_fit_utils.py</code> script performs the initial analysis of historical data to determine these distributions, saving them to files. The main simulation engine then uses functions in <code>utils.py</code> (like <code>activity_time</code>) to “roll the dice” according to these pre-calculated distributions whenever it needs a random but realistic value. This randomness is key to exploring the range of possible outcomes and getting meaningful insights from the simulation.</p>
 <p>So far, we’ve seen the interface, the engine directing the flow, the patient and resource entities, how resources are managed, and how randomness is introduced. But how do we actually <em>run</em> the simulation, potentially multiple times to account for this randomness, and do it efficiently? That’s the focus of the next chapter.</p>
@@ -437,6 +465,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Generated by <a href="https://github.com/The-Pocket/Tutorial-Codebase-Knowledge">AI Codebase Knowledge Builder</a></p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

@@ -4,19 +4,19 @@ In [Chapter 3: Patient Entity](03_patient_entity_.qmd), we met the "actors" in o
 
 This chapter introduces the **HEMS Resource Entity**. Think back to a city management game where you have fire trucks, police cars, and ambulances. Each vehicle is a distinct unit with its own capabilities, schedule, and status (available, busy, or in the garage). Our HEMS Resource Entity is just like that – it's the digital version of a specific Devon Air Ambulance helicopter or response car.
 
-**What Problem Does This Solve?**
+## What Problem Does This Solve?
 
 Imagine trying to run the simulation without knowing which helicopters or cars are available. How would we know if the *right kind* of help (e.g., a Critical Care team) is working at 2 AM? How would we know if Helicopter 'H70' is already busy helping another patient or if it's grounded for maintenance?
 
 We need a way to represent each operational unit individually, tracking its specific details and whether it's ready to respond. The **HEMS Resource Entity** solves this by acting as a detailed profile for each vehicle in our simulated fleet.
 
-**Meet the HEMS Resource Entity: A Vehicle's Profile**
+## Meet the HEMS Resource Entity: A Vehicle's Profile
 
 The HEMS Resource Entity is essentially a digital "character sheet" for each helicopter and car available to the service. When the simulation starts, it creates these profiles based on real-world information about the fleet.
 
 The [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd) and, more specifically, the [Resource Management (Availability & Allocation)](05_resource_management__availability___allocation__.qmd) system constantly consult these profiles to make decisions.
 
-**What Information Does a Resource Entity Hold? (Its Attributes)**
+## What Information Does a Resource Entity Hold? (Its Attributes)
 
 Each HEMS Resource Entity "profile" stores key details:
 
@@ -48,7 +48,7 @@ graph TD
     Status --> Servicing{"Servicing? (No)"};
 ```
 
-**How the Simulation Uses Resource Entities**
+## How the Simulation Uses Resource Entities
 
 The [Resource Management (Availability & Allocation)](05_resource_management__availability___allocation__.qmd) system is the main user of these entities. When a [Patient Entity](03_patient_entity_.qmd) needs help:
 
@@ -61,7 +61,7 @@ The [Resource Management (Availability & Allocation)](05_resource_management__av
     *   Sets the resource's `in_use` status to `True`.
 6.  **Release:** Once the resource finishes its task (e.g., patient handed over, returned to base), Resource Management sets its `in_use` status back to `False`, making it available again.
 
-**Under the Hood: The `HEMS` Class**
+## Under the Hood: The `HEMS` Class
 
 The blueprint for creating these resource profiles is defined in a Python file called `class_hems.py`. It contains a `class` named `HEMS`. Remember, a class is like a template.
 
@@ -127,7 +127,7 @@ class HEMS(Ambulance): # Inherits from Ambulance class
 *   **`hems_resource_on_shift(...)`:** This is a function *belonging* to the HEMS object. Given the current hour and season (quarter of the year), it checks the object's own rota times (`self.summer_start`, etc.) to see if it should be working.
 *   **`unavailable_due_to_service(...)`:** This function checks the object's `servicing_schedule` (which was calculated and stored when the object was created) against the current simulation date and time (`current_dt`) to see if it's in the garage for maintenance. It also updates the `self.being_serviced` flag.
 
-**Creating the Resources**
+## Creating the Resources
 
 These `HEMS` objects aren't created one by one in the main simulation logic. Instead, they are typically prepared at the start by the [Resource Management (Availability & Allocation)](05_resource_management__availability___allocation__.qmd) system, specifically within the `HEMSAvailability` class in `class_hems_availability.py`.
 
@@ -163,7 +163,7 @@ for index, row in HEMS_RESOURCES_DATA.iterrows():
 
 This setup code reads configuration files (like `actual_data/HEMS_ROTA.csv` which defines the callsigns, types, and rotas) and uses the `HEMS` class as a template to create an object for each resource listed. It also calculates and attaches the specific maintenance schedule (`servicing_schedule`) to each object.
 
-**Conclusion**
+## Conclusion
 
 The HEMS Resource Entity is the digital twin of a specific helicopter or car in the simulation. It bundles together all the essential information: its name (callsign), type, medical capability, working hours (rota), and unique registration. Crucially, it also holds information about its current status – whether it's busy (`in_use`) or out for maintenance (`being_serviced`).
 

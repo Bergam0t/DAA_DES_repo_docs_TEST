@@ -215,7 +215,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#chapter-3-patient-entity" id="toc-chapter-3-patient-entity" class="nav-link active" data-scroll-target="#chapter-3-patient-entity">Chapter 3: Patient Entity</a></li>
+  <li><a href="#chapter-3-patient-entity" id="toc-chapter-3-patient-entity" class="nav-link active" data-scroll-target="#chapter-3-patient-entity">Chapter 3: Patient Entity</a>
+  <ul class="collapse">
+  <li><a href="#whats-the-point-of-a-patient-entity" id="toc-whats-the-point-of-a-patient-entity" class="nav-link" data-scroll-target="#whats-the-point-of-a-patient-entity">What’s the Point of a Patient Entity?</a></li>
+  <li><a href="#meet-the-patient-entity-a-digital-case-file" id="toc-meet-the-patient-entity-a-digital-case-file" class="nav-link" data-scroll-target="#meet-the-patient-entity-a-digital-case-file">Meet the Patient Entity: A Digital Case File</a></li>
+  <li><a href="#what-information-does-a-patient-entity-hold-its-attributes" id="toc-what-information-does-a-patient-entity-hold-its-attributes" class="nav-link" data-scroll-target="#what-information-does-a-patient-entity-hold-its-attributes">What Information Does a Patient Entity Hold? (Its Attributes)</a></li>
+  <li><a href="#how-the-simulation-uses-the-patient-entity" id="toc-how-the-simulation-uses-the-patient-entity" class="nav-link" data-scroll-target="#how-the-simulation-uses-the-patient-entity">How the Simulation Uses the Patient Entity</a></li>
+  <li><a href="#under-the-hood-the-patient-class" id="toc-under-the-hood-the-patient-class" class="nav-link" data-scroll-target="#under-the-hood-the-patient-class">Under the Hood: The <code>Patient</code> Class</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -228,14 +236,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="chapter-3-patient-entity" class="level1">
 <h1>Chapter 3: Patient Entity</h1>
 <p>In <a href="./02_simulation_engine__patient_journey__.html">Chapter 2: Simulation Engine (Patient Journey)</a>, we learned about the “director” of our simulation – the engine that manages the flow of events and time. Now, let’s meet the main “actor” in our simulation play: the <strong>Patient Entity</strong>.</p>
-<p><strong>What’s the Point of a Patient Entity?</strong></p>
+<section id="whats-the-point-of-a-patient-entity" class="level2">
+<h2 class="anchored" data-anchor-id="whats-the-point-of-a-patient-entity">What’s the Point of a Patient Entity?</h2>
 <p>Imagine our simulation is like a board game simulating the Devon Air Ambulance service. Each time an emergency call comes in, we need a game piece to represent that specific incident. This piece needs to move around the board (representing the stages of care) and collect properties (like how serious the incident is, the patient’s age, and what happened to them).</p>
 <p>Without a way to track each individual case, we couldn’t simulate the service realistically. We wouldn’t know how many people needed help, what kind of help they needed, or whether the service was able to respond effectively to <em>each specific situation</em>.</p>
 <p>The <strong>Patient Entity</strong> solves this by acting as that unique game piece. It’s a digital representation of a single emergency incident requiring potential HEMS (Helicopter Emergency Medical Service) attention.</p>
-<p><strong>Meet the Patient Entity: A Digital Case File</strong></p>
+</section>
+<section id="meet-the-patient-entity-a-digital-case-file" class="level2">
+<h2 class="anchored" data-anchor-id="meet-the-patient-entity-a-digital-case-file">Meet the Patient Entity: A Digital Case File</h2>
 <p>Think of the Patient Entity as a digital file folder or a character sheet for each specific emergency case in the simulation. It doesn’t <em>do</em> things on its own, but it <em>holds</em> all the important information about one particular incident and the person involved.</p>
 <p>The <a href="./02_simulation_engine__patient_journey__.html">Simulation Engine (Patient Journey)</a> creates a new Patient Entity whenever a simulated emergency call occurs. It then fills in and updates the information in this “folder” as the simulated incident progresses.</p>
-<p><strong>What Information Does a Patient Entity Hold? (Its Attributes)</strong></p>
+</section>
+<section id="what-information-does-a-patient-entity-hold-its-attributes" class="level2">
+<h2 class="anchored" data-anchor-id="what-information-does-a-patient-entity-hold-its-attributes">What Information Does a Patient Entity Hold? (Its Attributes)</h2>
 <p>Our Patient Entity “folder” contains several key pieces of information, just like our game piece collects properties:</p>
 <ol type="1">
 <li><strong>Unique ID (<code>id</code>):</strong> Just like each game piece might have a number, each Patient Entity gets a unique identification number (e.g., Patient 1, Patient 2, … Patient 5432). This helps us track each case separately.</li>
@@ -258,73 +271,86 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Assigned Resource (<code>callsign</code>, <code>registration</code>):</strong> If a HEMS resource was assigned, which one was it? (e.g., Helicopter G-DAAN). This links the patient to a specific <a href="./04_hems_resource_entity_.html">HEMS Resource Entity</a>.</li>
 </ul></li>
 </ol>
-<p><strong>How the Simulation Uses the Patient Entity</strong></p>
+</section>
+<section id="how-the-simulation-uses-the-patient-entity" class="level2">
+<h2 class="anchored" data-anchor-id="how-the-simulation-uses-the-patient-entity">How the Simulation Uses the Patient Entity</h2>
 <p>The <a href="./02_simulation_engine__patient_journey__.html">Simulation Engine (Patient Journey)</a> is the one that interacts with the Patient Entity.</p>
 <ol type="1">
-<li><p><strong>Creation:</strong> When the engine decides a new call occurs, it creates a brand new, empty Patient Entity object. <code>python     # In des_hems.py (simplified 'generate_patient' function)     # ... inside the function when a new call happens ...     self.patient_counter += 1     # Create a new Patient object, giving it a unique ID     pt = Patient(self.patient_counter)     # Now 'pt' is our new, mostly empty, patient folder</code> This code snippet, found within the <code>generate_patient</code> function in <code>des_hems.py</code>, shows the creation of a new <code>Patient</code> instance (<code>pt</code>) using the <code>Patient</code> class definition (which we’ll look at next).</p></li>
-<li><p><strong>Filling Details:</strong> The engine then uses functions (often relying on <a href="./06_stochastic_modeling__distributions__.html">Stochastic Modeling (Distributions)</a>) to fill in the initial details.</p>
+<li><p><strong>Creation:</strong> When the engine decides a new call occurs, it creates a brand new, empty Patient Entity object.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In des_hems.py (simplified 'generate_patient' function)</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign details to the 'pt' object</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>pt.hour <span class="op">=</span> hod <span class="co"># Hour the call arrived</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>pt.ampds_card <span class="op">=</span> <span class="va">self</span>.utils.ampds_code_selection(pt.hour) <span class="co"># Assign medical code</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>pt.age <span class="op">=</span> <span class="va">self</span>.utils.age_sampling(pt.ampds_card, <span class="dv">115</span>) <span class="co"># Assign age</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>pt.sex <span class="op">=</span> <span class="va">self</span>.utils.sex_selection(pt.ampds_card) <span class="co"># Assign sex</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>pt.hems_cc_or_ec <span class="op">=</span> <span class="va">self</span>.utils.care_category_selection(pt.ampds_card) <span class="co"># Assign care need</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># ... other initial details ...</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Record the arrival event in the results log</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="va">self</span>.add_patient_result_row(pt, <span class="st">"arrival"</span>, <span class="st">"arrival_departure"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ... inside the function when a new call happens ...</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="va">self</span>.patient_counter <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new Patient object, giving it a unique ID</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>pt <span class="op">=</span> Patient(<span class="va">self</span>.patient_counter)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Now 'pt' is our new, mostly empty, patient folder</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>This code snippet, found within the <code>generate_patient</code> function in <code>des_hems.py</code>, shows the creation of a new <code>Patient</code> instance (<code>pt</code>) using the <code>Patient</code> class definition (which we’ll look at next).</p></li>
+<li><p><strong>Filling Details:</strong> The engine then uses functions (often relying on <a href="./06_stochastic_modeling__distributions__.html">Stochastic Modeling (Distributions)</a>) to fill in the initial details.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In des_hems.py (simplified 'generate_patient' function)</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Assign details to the 'pt' object</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>pt.hour <span class="op">=</span> hod <span class="co"># Hour the call arrived</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>pt.ampds_card <span class="op">=</span> <span class="va">self</span>.utils.ampds_code_selection(pt.hour) <span class="co"># Assign medical code</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>pt.age <span class="op">=</span> <span class="va">self</span>.utils.age_sampling(pt.ampds_card, <span class="dv">115</span>) <span class="co"># Assign age</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>pt.sex <span class="op">=</span> <span class="va">self</span>.utils.sex_selection(pt.ampds_card) <span class="co"># Assign sex</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>pt.hems_cc_or_ec <span class="op">=</span> <span class="va">self</span>.utils.care_category_selection(pt.ampds_card) <span class="co"># Assign care need</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># ... other initial details ...</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Record the arrival event in the results log</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="va">self</span>.add_patient_result_row(pt, <span class="st">"arrival"</span>, <span class="st">"arrival_departure"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Here, the engine calls utility functions (<code>self.utils...</code>) to determine things like the medical code (<code>ampds_card</code>) and demographics (<code>age</code>, <code>sex</code>) and stores them directly into the <code>pt</code> object’s attributes.</p></li>
 <li><p><strong>Updating During Journey:</strong> As the engine guides the patient through their simulated journey (mobilisation, travel, scene time, etc.), it updates the Patient Entity and records events.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In des_hems.py (simplified 'patient_journey' function)</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ... after simulating mobilisation time ...</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>mobilisation_time <span class="op">=</span> <span class="va">self</span>.utils.activity_time(patient.hems_vehicle_type, <span class="st">'time_mobile'</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="cf">yield</span> <span class="va">self</span>.env.timeout(mobilisation_time) <span class="co"># Advance simulation clock</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Record that the HEMS resource is now mobile for this patient</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="va">self</span>.add_patient_result_row(patient, <span class="st">"HEMS mobile"</span>, <span class="st">"queue"</span>)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># ... later, after simulating travel time ...</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>tts_time <span class="op">=</span> <span class="va">self</span>.utils.activity_time(patient.hems_vehicle_type, <span class="st">'time_to_scene'</span>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="cf">yield</span> <span class="va">self</span>.env.timeout(tts_time) <span class="co"># Advance simulation clock</span></span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Record that HEMS is on scene for this patient</span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="va">self</span>.add_patient_result_row(patient, <span class="st">"HEMS on scene"</span>, <span class="st">"queue"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In des_hems.py (simplified 'patient_journey' function)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ... after simulating mobilisation time ...</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>mobilisation_time <span class="op">=</span> <span class="va">self</span>.utils.activity_time(patient.hems_vehicle_type, <span class="st">'time_mobile'</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="cf">yield</span> <span class="va">self</span>.env.timeout(mobilisation_time) <span class="co"># Advance simulation clock</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Record that the HEMS resource is now mobile for this patient</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="va">self</span>.add_patient_result_row(patient, <span class="st">"HEMS mobile"</span>, <span class="st">"queue"</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># ... later, after simulating travel time ...</span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>tts_time <span class="op">=</span> <span class="va">self</span>.utils.activity_time(patient.hems_vehicle_type, <span class="st">'time_to_scene'</span>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="cf">yield</span> <span class="va">self</span>.env.timeout(tts_time) <span class="co"># Advance simulation clock</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Record that HEMS is on scene for this patient</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="va">self</span>.add_patient_result_row(patient, <span class="st">"HEMS on scene"</span>, <span class="st">"queue"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>In the <code>patient_journey</code> function, after simulating a time delay (<code>yield self.env.timeout(...)</code>), the engine calls <code>self.add_patient_result_row(...)</code>. This function takes the <code>patient</code> object (our Patient Entity) and the event details (“HEMS mobile”, “HEMS on scene”) and logs them. This log file becomes the raw data for <a href="./08_results_processing___visualization_.html">Results Processing &amp; Visualization</a>.</p></li>
 </ol>
-<p><strong>Under the Hood: The <code>Patient</code> Class</strong></p>
+</section>
+<section id="under-the-hood-the-patient-class" class="level2">
+<h2 class="anchored" data-anchor-id="under-the-hood-the-patient-class">Under the Hood: The <code>Patient</code> Class</h2>
 <p>The blueprint for creating these Patient Entity “folders” is defined in a Python file called <code>class_patient.py</code>. This file contains a <code>class</code> named <code>Patient</code>. A class is like a template for creating objects.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In class_patient.py (Heavily Simplified Structure)</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Patient:</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The __init__ method is called when a new Patient object is created</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, p_id: <span class="bu">int</span>):</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="co"># --- Core Identifiers ---</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="bu">id</span> <span class="op">=</span> p_id          <span class="co"># Unique ID for this patient instance</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.time_in_sim <span class="op">=</span> <span class="dv">0</span>    <span class="co"># How long this patient has been in the sim (updated later)</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.current_dt <span class="op">=</span> <span class="va">None</span>  <span class="co"># The datetime the patient entered the sim (set later)</span></span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># --- Incident &amp; Medical Details (Filled in by Simulation Engine) ---</span></span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.ampds_card <span class="op">=</span> <span class="st">""</span>    <span class="co"># e.g., "17A1" (Falls)</span></span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.hems_cc_or_ec <span class="op">=</span> <span class="st">"REG"</span> <span class="co"># Care Category: 'CC', 'EC', or 'REG'</span></span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ... other incident details like location (postcode, lat/long) ...</span></span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># --- Demographics (Filled in by Simulation Engine) ---</span></span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.age <span class="op">=</span> <span class="dv">0</span>            <span class="co"># e.g., 65</span></span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.sex <span class="op">=</span> <span class="st">"female"</span>     <span class="co"># e.g., "male" or "female"</span></span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        <span class="co"># --- Journey &amp; Outcome Tracking (Filled in by Simulation Engine) ---</span></span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.hems_case <span class="op">=</span> <span class="op">-</span><span class="dv">1</span>     <span class="co"># Is this potentially a HEMS case? (1=yes, 0=no)</span></span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.hems_result <span class="op">=</span> <span class="st">""</span>   <span class="co"># e.g., "Patient Conveyed", "Stand Down En Route"</span></span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.pt_outcome <span class="op">=</span> <span class="st">""</span>    <span class="co"># e.g., "Airlifted", "Deceased"</span></span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.callsign <span class="op">=</span> <span class="st">""</span>      <span class="co"># Callsign of assigned HEMS resource (e.g., "H70")</span></span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.hems_vehicle_type <span class="op">=</span> <span class="st">""</span> <span class="co"># e.g., "Helicopter", "Car"</span></span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ... other tracking variables ...</span></span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># (The Patient class doesn't usually have many methods,</span></span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="co">#  it mostly just holds data)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In class_patient.py (Heavily Simplified Structure)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> Patient:</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The __init__ method is called when a new Patient object is created</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, p_id: <span class="bu">int</span>):</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>        <span class="co"># --- Core Identifiers ---</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.<span class="bu">id</span> <span class="op">=</span> p_id          <span class="co"># Unique ID for this patient instance</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.time_in_sim <span class="op">=</span> <span class="dv">0</span>    <span class="co"># How long this patient has been in the sim (updated later)</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.current_dt <span class="op">=</span> <span class="va">None</span>  <span class="co"># The datetime the patient entered the sim (set later)</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># --- Incident &amp; Medical Details (Filled in by Simulation Engine) ---</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.ampds_card <span class="op">=</span> <span class="st">""</span>    <span class="co"># e.g., "17A1" (Falls)</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.hems_cc_or_ec <span class="op">=</span> <span class="st">"REG"</span> <span class="co"># Care Category: 'CC', 'EC', or 'REG'</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ... other incident details like location (postcode, lat/long) ...</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>        <span class="co"># --- Demographics (Filled in by Simulation Engine) ---</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.age <span class="op">=</span> <span class="dv">0</span>            <span class="co"># e.g., 65</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.sex <span class="op">=</span> <span class="st">"female"</span>     <span class="co"># e.g., "male" or "female"</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>        <span class="co"># --- Journey &amp; Outcome Tracking (Filled in by Simulation Engine) ---</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.hems_case <span class="op">=</span> <span class="op">-</span><span class="dv">1</span>     <span class="co"># Is this potentially a HEMS case? (1=yes, 0=no)</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.hems_result <span class="op">=</span> <span class="st">""</span>   <span class="co"># e.g., "Patient Conveyed", "Stand Down En Route"</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.pt_outcome <span class="op">=</span> <span class="st">""</span>    <span class="co"># e.g., "Airlifted", "Deceased"</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.callsign <span class="op">=</span> <span class="st">""</span>      <span class="co"># Callsign of assigned HEMS resource (e.g., "H70")</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.hems_vehicle_type <span class="op">=</span> <span class="st">""</span> <span class="co"># e.g., "Helicopter", "Car"</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>        <span class="co"># ... other tracking variables ...</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># (The Patient class doesn't usually have many methods,</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    <span class="co">#  it mostly just holds data)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>When the line <code>pt = Patient(self.patient_counter)</code> runs in <code>des_hems.py</code>, Python uses this <code>Patient</code> class blueprint to create a new object in memory. This object starts with the default values shown above (like <code>ampds_card = ""</code>, <code>age = 0</code>). The <a href="./02_simulation_engine__patient_journey__.html">Simulation Engine (Patient Journey)</a> then accesses and modifies these attributes (like <code>pt.age = calculated_age</code>) as the simulation progresses.</p>
-<p><strong>Conclusion</strong></p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>The Patient Entity is the fundamental unit representing an individual emergency case within the DAA_DES simulation. It acts like a digital file folder or a game piece, holding crucial information like the patient’s ID, medical needs, demographics, and the details of their journey through the HEMS system.</p>
 <p>While the <a href="./02_simulation_engine__patient_journey__.html">Simulation Engine (Patient Journey)</a> <em>directs</em> the action, the Patient Entity <em>stores</em> the state and characteristics of each case. Understanding this data container is key to seeing how the simulation tracks individual experiences and generates meaningful results.</p>
 <p>Now that we’ve met the patient, let’s look at the other crucial actors in our simulation: the emergency resources themselves.</p>
@@ -333,6 +359,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Generated by <a href="https://github.com/The-Pocket/Tutorial-Codebase-Knowledge">AI Codebase Knowledge Builder</a></p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

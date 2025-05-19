@@ -6,7 +6,7 @@ Imagine you're a manager at the air ambulance service. You might wonder, "What h
 
 This chapter introduces the user-friendly interface built with a tool called **Streamlit**. Think of it as the **dashboard and control panel** for our simulation. It hides all the complicated Python code (the "engine") and gives you simple controls like buttons, sliders, and text boxes to configure and run the simulation. It also displays the results clearly using charts and key numbers.
 
-**What Problem Does This Solve?**
+## What Problem Does This Solve?
 
 Without a graphical interface, users would need to:
 
@@ -18,7 +18,7 @@ Without a graphical interface, users would need to:
 
 This is time-consuming and requires programming skills. The Streamlit interface solves this by providing an easy-to-use web application accessible through your browser.
 
-**Meet Streamlit: Your Simulation Control Panel**
+## Meet Streamlit: Your Simulation Control Panel
 
 Streamlit is a Python library that makes it incredibly easy to create web applications for data science and machine learning projects. For DAA_DES, we use it to build the interactive layer *on top* of the core simulation model.
 
@@ -36,12 +36,12 @@ Here's what the interface allows you to do:
     *   Charts showing trends (e.g., calls per month, jobs per hour).
     *   Comparisons with historical data.
 
-**Using the Interface: A Quick Tour**
+## Using the Interface: A Quick Tour
 
 Getting the simulation running via the interface is straightforward:
 
 1.  **Start the App:** Open your terminal or command prompt, navigate to the project's root directory, and type:
-    ```bash
+    ```{bash}
     streamlit run app/app.py
     ```
     This command tells Streamlit to run the main application file (`app.py`), which will then open a new tab in your web browser.
@@ -133,7 +133,7 @@ Getting the simulation running via the interface is straightforward:
     ```
     This uses Streamlit's built-in functions (`st.metric`, `st.plotly_chart`) to present the simulation output in an easy-to-understand format.
 
-**Under the Hood: How Streamlit Connects Everything**
+## Under the Hood: How Streamlit Connects Everything
 
 While you interact with the simple web page, Streamlit coordinates several actions behind the scenes when you click "Run Simulation":
 
@@ -167,7 +167,7 @@ sequenceDiagram
 
 The key takeaway is that the Streamlit code in the `app/` folder acts as a bridge between you (the user) and the complex simulation engine running in the background.
 
-**Conclusion**
+## Conclusion
 
 The Web Application Interface, built using Streamlit, is the friendly face of the DAA_DES project. It allows anyone to easily configure simulation parameters, run different scenarios, and visualize the results without needing to write or modify any Python code. It acts as the control panel, making the powerful simulation engine accessible.
 

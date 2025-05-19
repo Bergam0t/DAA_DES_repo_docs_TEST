@@ -9,22 +9,14 @@ The goal is to understand how resource changes impact performance metrics like r
 
 ```{mermaid}
 flowchart TD
-    A0["Simulation Engine (Patient Journey)
-"]
-    A1["Patient Entity
-"]
-    A2["HEMS Resource Entity
-"]
-    A3["Resource Management (Availability & Allocation)
-"]
-    A4["Simulation Runner & Parallelization
-"]
-    A5["Stochastic Modeling (Distributions)
-"]
-    A6["Web Application Interface (Streamlit)
-"]
-    A7["Results Processing & Visualization
-"]
+    A0["Simulation Engine - Patient Journey"]
+    A1["Patient Entity"]
+    A2["HEMS Resource Entity"]
+    A3["Resource Management - Availability & Allocation"]
+    A4["Simulation Runner & Parallelization"]
+    A5["Stochastic Modeling - Distributions"]
+    A6["Web Application Interface - Streamlit"]
+    A7["Results Processing & Visualization"]
     A0 -- "Generates & Manages" --> A1
     A0 -- "Requests Allocation" --> A3
     A0 -- "Uses Timings/Distributions" --> A5

@@ -4,7 +4,7 @@ In [Chapter 4: HEMS Resource Entity](04_hems_resource_entity_.qmd), we learned a
 
 That's where **Resource Management** comes in. Think of this part of the simulation as the **Dispatch Center** or the **Air Traffic Controller** for our HEMS (Helicopter Emergency Medical Service) units. It keeps track of every resource, knows who is working, who is busy, and who is best suited for the next job.
 
-**What Problem Does This Solve?**
+## What Problem Does This Solve?
 
 Imagine a 999 call comes in: a serious accident requiring Critical Care (CC). The DAA has several resources: a CC helicopter (H70), an EC (Emergency Care) helicopter (H71), and a CC car (CC72).
 
@@ -16,7 +16,7 @@ Imagine a 999 call comes in: a serious accident requiring Critical Care (CC). Th
 
 Without a central system managing this, the simulation would be chaos! Resources might get double-booked, or the wrong type of help might be sent. The Resource Management system solves this by acting as the central coordinator for all HEMS resources.
 
-**Meet the Dispatch Center: Key Roles**
+## Meet the Dispatch Center: Key Roles
 
 The Resource Management system, primarily implemented in the `class_hems_availability.py` file, acts like a dispatcher with a real-time status board. Its main jobs are:
 
@@ -33,7 +33,7 @@ The Resource Management system, primarily implemented in the `class_hems_availab
 4.  **Handling Unavailability:** If the *preferred* resource isn't available, it checks the next best option according to the hierarchy. If *no* suitable resource is available at all, it records that HEMS could not respond.
 5.  **Release:** Once a resource finishes its task (e.g., patient delivered to hospital, returned to base), the system marks it as available again (`in_use = False`) so it can be dispatched to the next call.
 
-**How the Simulation Engine Uses Resource Management**
+## How the Simulation Engine Uses Resource Management
 
 Remember the [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd)? When it creates a new patient, it needs to ask the Resource Management system if help is available.
 
@@ -72,7 +72,7 @@ else:
     # In this simplified example, we might just end their journey here.
 ```
 
-**Explanation:**
+## Explanation:
 
 1.  The code first determines if the patient needs 'REG' care or higher ('CC'/'EC').
 2.  It then calls the appropriate function from the `self.hems_resources` object (which is an instance of the `HEMSAvailability` class from `class_hems_availability.py`). It passes the `pt` (Patient Entity) object, which contains the patient's needs.
@@ -82,11 +82,11 @@ else:
     *   If it's `None`, it means no suitable resource was free.
 5.  The code then proceeds based on whether a resource was allocated or not.
 
-**Under the Hood: The Dispatcher's Logic (`HEMSAvailability` class)**
+## Under the Hood: The Dispatcher's Logic (`HEMSAvailability` class)
 
 Let's peek inside the `class_hems_availability.py` file, where the `HEMSAvailability` class lives. This class manages the pool of resources.
 
-**1. Initialization and Resource Pool:**
+### 1. Initialization and Resource Pool:
 When the simulation starts, `HEMSAvailability` reads the resource details (from files like `HEMS_ROTA.csv`) and creates a [HEMS Resource Entity](04_hems_resource_entity_.qmd) object for each one. It also calculates their maintenance schedules. These objects are stored in a special container called a `simpy.FilterStore`. Think of this store as the dispatcher's cabinet holding all the resource files.
 
 ```python
@@ -139,7 +139,7 @@ class HEMSAvailability():
             self.store.put(h)
 ```
 
-**2. Checking Availability and Preference (`preferred_resource_available`):**
+### 2. Checking Availability and Preference (`preferred_resource_available`):
 This is the core logic for finding the best match. It loops through the resources in the `store` and checks their status and capabilities against the patient's needs.
 
 ```python
@@ -200,7 +200,7 @@ This is the core logic for finding the best match. It loops through the resource
             return [None, self.resource_allocation_lookup(0)] # Code 0 = No resource available
 ```
 
-**3. Allocating the Resource (`allocate_resource`):**
+### 3. Allocating the Resource (`allocate_resource`):
 Once the preferred available resource is identified, this function attempts to "take" it from the store and mark it as busy. It uses SimPy's `store.get()` mechanism.
 
 ```python
@@ -250,7 +250,7 @@ Once the preferred available resource is identified, this function attempts to "
         return resource_event # Return the event that will eventually hold the result
 ```
 
-**4. Releasing the Resource (`return_resource`):**
+### 4. Releasing the Resource (`return_resource`):
 When the `patient_journey` function in `des_hems.py` finishes, it calls this function to put the resource back into the available pool.
 
 ```python
@@ -300,7 +300,7 @@ sequenceDiagram
     ResMgmt-->>-Engine: Resource returned
 ```
 
-**Conclusion**
+## Conclusion
 
 The Resource Management system (`HEMSAvailability`) is the crucial dispatch center of our simulation. It maintains a real-time view of all [HEMS Resource Entities](04_hems_resource_entity_.qmd), checking if they are on shift, free, and not under maintenance. When a [Patient Entity](03_patient_entity_.qmd) needs help, it uses a defined hierarchy to select the *preferred* available resource, allocates it, and ensures it's properly released afterwards. This prevents conflicts and ensures the simulation realistically models how resources are assigned based on availability and operational rules.
 

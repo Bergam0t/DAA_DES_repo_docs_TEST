@@ -218,7 +218,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#chapter-2-simulation-engine-patient-journey" id="toc-chapter-2-simulation-engine-patient-journey" class="nav-link active" data-scroll-target="#chapter-2-simulation-engine-patient-journey">Chapter 2: Simulation Engine (Patient Journey)</a></li>
+  <li><a href="#chapter-2-simulation-engine-patient-journey" id="toc-chapter-2-simulation-engine-patient-journey" class="nav-link active" data-scroll-target="#chapter-2-simulation-engine-patient-journey">Chapter 2: Simulation Engine (Patient Journey)</a>
+  <ul class="collapse">
+  <li><a href="#what-problem-does-this-solve" id="toc-what-problem-does-this-solve" class="nav-link" data-scroll-target="#what-problem-does-this-solve">What Problem Does This Solve?</a></li>
+  <li><a href="#the-directors-script-key-roles-of-the-engine" id="toc-the-directors-script-key-roles-of-the-engine" class="nav-link" data-scroll-target="#the-directors-script-key-roles-of-the-engine">The Director’s Script: Key Roles of the Engine</a></li>
+  <li><a href="#a-patients-journey-an-example" id="toc-a-patients-journey-an-example" class="nav-link" data-scroll-target="#a-patients-journey-an-example">A Patient’s Journey: An Example</a></li>
+  <li><a href="#how-it-fits-together" id="toc-how-it-fits-together" class="nav-link" data-scroll-target="#how-it-fits-together">How it Fits Together</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -232,10 +239,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>Chapter 2: Simulation Engine (Patient Journey)</h1>
 <p>In <a href="./01_web_application_interface__streamlit__.html">Chapter 1: Web Application Interface (Streamlit)</a>, we saw the control panel that lets you configure and run the DAA_DES simulation. But what actually happens when you click that “Run Simulation” button? How does the simulation <em>know</em> what to do?</p>
 <p>This chapter introduces the <strong>Simulation Engine</strong>, the heart of our simulation. Think of it as the <strong>director of a play</strong>. The play is the Devon Air Ambulance service operating over a period (like a year). The actors are the individual patient cases that arise. The Simulation Engine directs each patient actor through their scenes (the stages of their interaction with the service), making sure everything happens in the right order and according to the rules.</p>
-<p><strong>What Problem Does This Solve?</strong></p>
+<section id="what-problem-does-this-solve" class="level2">
+<h2 class="anchored" data-anchor-id="what-problem-does-this-solve">What Problem Does This Solve?</h2>
 <p>Imagine trying to manually figure out the entire sequence of events for thousands of potential emergency calls over a year. When does a call come in? Is a helicopter needed? Is one available? How long does it take to get ready, fly to the scene, treat the patient, fly to the hospital, and become ready again? This is incredibly complex!</p>
 <p>The Simulation Engine automates this entire process. It manages the flow of time and events within the simulated world, allowing us to model the complex interactions between calls, resources, and patient outcomes.</p>
-<p><strong>The Director’s Script: Key Roles of the Engine</strong></p>
+</section>
+<section id="the-directors-script-key-roles-of-the-engine" class="level2">
+<h2 class="anchored" data-anchor-id="the-directors-script-key-roles-of-the-engine">The Director’s Script: Key Roles of the Engine</h2>
 <p>The Simulation Engine, primarily implemented in the <code>des_hems.py</code> file, handles several crucial tasks:</p>
 <ol type="1">
 <li><strong>Generating Calls:</strong> It creates new patient incidents based on realistic patterns. For example, it knows that more calls tend to happen during certain hours of the day or certain times of the year. It uses probabilities (<a href="./06_stochastic_modeling__distributions__.html">Stochastic Modeling (Distributions)</a>) to decide <em>when</em> the next call arrives.</li>
@@ -252,7 +262,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul></li>
 <li><strong>Recording Events:</strong> Throughout this journey, the engine logs every important event and timestamp. This data is crucial for later analysis (<a href="./08_results_processing___visualization_.html">Results Processing &amp; Visualization</a>).</li>
 </ol>
-<p><strong>A Patient’s Journey: An Example</strong></p>
+</section>
+<section id="a-patients-journey-an-example" class="level2">
+<h2 class="anchored" data-anchor-id="a-patients-journey-an-example">A Patient’s Journey: An Example</h2>
 <p>Let’s follow a simplified journey directed by the Simulation Engine:</p>
 <ol type="1">
 <li><strong>Call Arrives:</strong> The engine decides (based on its internal clock and probability distributions) that a call comes in at <code>simulation time = 125.5 minutes</code>.</li>
@@ -340,7 +352,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.add_patient_result_row(patient, hems_res.callsign, <span class="st">"resource_use_end"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Again, <code>yield self.env.timeout(...)</code> makes the simulation clock move forward. The <code>self.add_patient_result_row(...)</code> function logs what happened and when, building up the data needed for <a href="./08_results_processing___visualization_.html">Results Processing &amp; Visualization</a>. The <code>finally</code> block ensures the resource is always returned.</p></li>
 </ul>
-<p><strong>How it Fits Together</strong></p>
+</section>
+<section id="how-it-fits-together" class="level2">
+<h2 class="anchored" data-anchor-id="how-it-fits-together">How it Fits Together</h2>
 <p>Here’s a simplified diagram showing the main interactions when a new call arrives:</p>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
@@ -379,7 +393,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>The Simulation Engine (<code>des_hems.py</code> containing <code>generate_calls</code>, <code>generate_patient</code>, <code>patient_journey</code>) acts as the central orchestrator. It creates patients, interacts with the resource management system, and steps through the time-based events of each patient’s journey, using data structures like the <a href="./03_patient_entity_.html">Patient Entity</a> and rules defined in <a href="./05_resource_management__availability___allocation__.html">Resource Management (Availability &amp; Allocation)</a>.</p>
-<p><strong>Conclusion</strong></p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>The Simulation Engine is the core logic that drives the DAA_DES simulation. It acts like a director, generating patient calls based on realistic patterns and guiding each patient (and the assigned HEMS resource) through the stages of their journey – from the initial call, through mobilisation, scene arrival, treatment, and finally becoming clear. It manages simulation time and ensures events happen in the correct sequence, using probabilistic timings defined in <a href="./06_stochastic_modeling__distributions__.html">Stochastic Modeling (Distributions)</a>. This engine allows us to model the complex, dynamic behaviour of the HEMS system.</p>
 <p>Now that we understand how the overall flow is managed, let’s look more closely at the main ‘actor’ in our simulation: the patient.</p>
 <p><strong>Next:</strong> <a href="./03_patient_entity_.html">Chapter 3: Patient Entity</a></p>
@@ -387,6 +403,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Generated by <a href="https://github.com/The-Pocket/Tutorial-Codebase-Knowledge">AI Codebase Knowledge Builder</a></p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

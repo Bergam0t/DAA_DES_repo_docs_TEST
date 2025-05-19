@@ -2,7 +2,7 @@
 
 In [Chapter 2: Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd), we learned about the "director" of our simulation – the engine that manages the flow of events and time. Now, let's meet the main "actor" in our simulation play: the **Patient Entity**.
 
-**What's the Point of a Patient Entity?**
+## What's the Point of a Patient Entity?
 
 Imagine our simulation is like a board game simulating the Devon Air Ambulance service. Each time an emergency call comes in, we need a game piece to represent that specific incident. This piece needs to move around the board (representing the stages of care) and collect properties (like how serious the incident is, the patient's age, and what happened to them).
 
@@ -10,13 +10,13 @@ Without a way to track each individual case, we couldn't simulate the service re
 
 The **Patient Entity** solves this by acting as that unique game piece. It's a digital representation of a single emergency incident requiring potential HEMS (Helicopter Emergency Medical Service) attention.
 
-**Meet the Patient Entity: A Digital Case File**
+## Meet the Patient Entity: A Digital Case File
 
 Think of the Patient Entity as a digital file folder or a character sheet for each specific emergency case in the simulation. It doesn't *do* things on its own, but it *holds* all the important information about one particular incident and the person involved.
 
 The [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd) creates a new Patient Entity whenever a simulated emergency call occurs. It then fills in and updates the information in this "folder" as the simulated incident progresses.
 
-**What Information Does a Patient Entity Hold? (Its Attributes)**
+## What Information Does a Patient Entity Hold? (Its Attributes)
 
 Our Patient Entity "folder" contains several key pieces of information, just like our game piece collects properties:
 
@@ -34,11 +34,12 @@ Our Patient Entity "folder" contains several key pieces of information, just lik
     *   **Final Outcome (`pt_outcome`):** What was the ultimate outcome for this specific simulated case? (e.g., "Airlifted," "Conveyed by land with DAA," "Deceased").
     *   **Assigned Resource (`callsign`, `registration`):** If a HEMS resource was assigned, which one was it? (e.g., Helicopter G-DAAN). This links the patient to a specific [HEMS Resource Entity](04_hems_resource_entity_.qmd).
 
-**How the Simulation Uses the Patient Entity**
+## How the Simulation Uses the Patient Entity
 
 The [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd) is the one that interacts with the Patient Entity.
 
 1.  **Creation:** When the engine decides a new call occurs, it creates a brand new, empty Patient Entity object.
+
     ```python
     # In des_hems.py (simplified 'generate_patient' function)
     # ... inside the function when a new call happens ...
@@ -47,9 +48,11 @@ The [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey_
     pt = Patient(self.patient_counter)
     # Now 'pt' is our new, mostly empty, patient folder
     ```
+
     This code snippet, found within the `generate_patient` function in `des_hems.py`, shows the creation of a new `Patient` instance (`pt`) using the `Patient` class definition (which we'll look at next).
 
 2.  **Filling Details:** The engine then uses functions (often relying on [Stochastic Modeling (Distributions)](06_stochastic_modeling__distributions__.qmd)) to fill in the initial details.
+
     ```python
     # In des_hems.py (simplified 'generate_patient' function)
     # Assign details to the 'pt' object
@@ -63,9 +66,11 @@ The [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey_
     # Record the arrival event in the results log
     self.add_patient_result_row(pt, "arrival", "arrival_departure")
     ```
+
     Here, the engine calls utility functions (`self.utils...`) to determine things like the medical code (`ampds_card`) and demographics (`age`, `sex`) and stores them directly into the `pt` object's attributes.
 
 3.  **Updating During Journey:** As the engine guides the patient through their simulated journey (mobilisation, travel, scene time, etc.), it updates the Patient Entity and records events.
+
     ```python
     # In des_hems.py (simplified 'patient_journey' function)
     # ... after simulating mobilisation time ...
@@ -82,9 +87,10 @@ The [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey_
     # Record that HEMS is on scene for this patient
     self.add_patient_result_row(patient, "HEMS on scene", "queue")
     ```
+
     In the `patient_journey` function, after simulating a time delay (`yield self.env.timeout(...)`), the engine calls `self.add_patient_result_row(...)`. This function takes the `patient` object (our Patient Entity) and the event details ("HEMS mobile", "HEMS on scene") and logs them. This log file becomes the raw data for [Results Processing & Visualization](08_results_processing___visualization_.qmd).
 
-**Under the Hood: The `Patient` Class**
+## Under the Hood: The `Patient` Class
 
 The blueprint for creating these Patient Entity "folders" is defined in a Python file called `class_patient.py`. This file contains a `class` named `Patient`. A class is like a template for creating objects.
 
@@ -122,7 +128,7 @@ class Patient:
 
 When the line `pt = Patient(self.patient_counter)` runs in `des_hems.py`, Python uses this `Patient` class blueprint to create a new object in memory. This object starts with the default values shown above (like `ampds_card = ""`, `age = 0`). The [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd) then accesses and modifies these attributes (like `pt.age = calculated_age`) as the simulation progresses.
 
-**Conclusion**
+## Conclusion
 
 The Patient Entity is the fundamental unit representing an individual emergency case within the DAA_DES simulation. It acts like a digital file folder or a game piece, holding crucial information like the patient's ID, medical needs, demographics, and the details of their journey through the HEMS system.
 

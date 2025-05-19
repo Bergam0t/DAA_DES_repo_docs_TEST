@@ -2,7 +2,7 @@
 
 In [Chapter 5: Resource Management (Availability & Allocation)](05_resource_management__availability___allocation__.qmd), we saw how the simulation acts like a dispatcher, assigning available helicopters and cars to incoming emergencies. But when a resource *is* assigned, how does the simulation know how long things will take? How long to get ready (mobilisation)? How long to fly to the scene? How long will the crew spend treating the patient?
 
-**The Problem: The Real World is Messy and Unpredictable**
+## The Problem: The Real World is Messy and Unpredictable
 
 Imagine we set the simulation so that mobilisation *always* takes exactly 5 minutes, flying to the scene *always* takes 12 minutes, and time on scene is *always* 25 minutes. This might be easy to program, but it's not realistic!
 
@@ -16,7 +16,7 @@ In reality:
 
 If we use fixed numbers, our simulation won't accurately reflect the variability and randomness of the real world. The results might look too neat and predictable, potentially leading to wrong conclusions about resource needs or performance.
 
-**The Solution: Using Loaded Dice (Based on Reality!)**
+## The Solution: Using Loaded Dice (Based on Reality!)
 
 This is where **Stochastic Modeling** comes in. "Stochastic" just means involving randomness or probability. Instead of fixed values, we use **statistical distributions** to model key parameters.
 
@@ -27,7 +27,7 @@ Think of it like using **loaded dice** in our simulation game. But instead of lo
 
 This introduces realistic variability and makes the simulation behave much more like the actual HEMS system.
 
-**What Are Distributions?**
+## What Are Distributions?
 
 A statistical distribution is just a mathematical way to describe the likelihood of different outcomes. Some common examples:
 
@@ -38,7 +38,7 @@ A statistical distribution is just a mathematical way to describe the likelihood
 
 Our simulation doesn't need to know the complex math behind these. It just needs to know *which* distribution to use for a specific variable and what the *parameters* of that distribution are (e.g., for a normal distribution, the average and the spread).
 
-**Where Are Distributions Used in DAA_DES?**
+## Where Are Distributions Used in DAA_DES?
 
 We use distributions derived from historical data for many key aspects:
 
@@ -59,7 +59,7 @@ We use distributions derived from historical data for many key aspects:
 
 By using distributions for these, the simulation generates a wide range of plausible scenarios, reflecting real-world randomness.
 
-**Preparing the Distributions: `distribution_fit_utils.py`**
+## Preparing the Distributions: `distribution_fit_utils.py`
 
 How do we know *which* distribution and parameters to use for, say, 'time on scene' for a helicopter? We analyse historical data!
 
@@ -79,7 +79,7 @@ These resulting configuration files are typically stored in the `distribution_da
 
 **Important:** You usually don't need to run `distribution_fit_utils.py` yourself unless the historical data changes significantly or you want to re-analyse it. The pre-calculated files in `distribution_data/` allow the main simulation to run.
 
-**How the Simulation Uses the Prepared Distributions**
+## How the Simulation Uses the Prepared Distributions
 
 The [Simulation Engine (Patient Journey)](02_simulation_engine__patient_journey__.qmd) relies heavily on helper functions within `utils.py` to get these random values. Let's look at a key example: getting an activity duration.
 
@@ -193,7 +193,7 @@ class Utils:
     # def sex_selection(self, ampds_card: int) -> str: ...
 ```
 
-**Key Ideas from the Code:**
+## Key Ideas from the Code:
 
 1.  **Pre-calculation:** The distributions are figured out beforehand by `distribution_fit_utils.py` and loaded when the `Utils` class starts.
 2.  **Lookup:** The `activity_time` function finds the correct pre-loaded distribution based on the `vehicle_type` and `time_type`.
@@ -201,21 +201,21 @@ class Utils:
 4.  **Bounds Checking:** It ensures the sampled time is within realistic minimum and maximum limits defined in `actual_data/upper_allowable_time_bounds.csv`.
 5.  **Seeding:** The use of `master_seed`, `SeedSequence`, and `default_rng` ensures that if you run the simulation with the same seed, you will get the *exact same sequence* of "random" numbers, making the simulation reproducible for testing and debugging.
 
-**Simplified Data Flow:**
+## Simplified Data Flow:
 
 Here's how the pieces fit together:
 
 ```{mermaid}
 graph LR
-    A[Historical Data (CSV)] --> B(distribution_fit_utils.py);
-    B -- Analyzes Data --> C{Distribution Files (distribution_data/)};
-    C -- Loaded at Start --> D(Utils Class);
-    E[Simulation Engine (des_hems.py)] -- Needs Random Value --> D;
-    D -- Looks up Distribution & Samples --> F[Realistic Random Value (e.g., 11.5 min)];
-    E -- Uses Value --> G(Simulation Progresses);
+    A["Historical Data - CSV"] --> B("distribution_fit_utils.py");
+    B -- Analyzes Data --> C{"Distribution Files distribution_data/"};
+    C -- Loaded at Start --> D("Utils Class");
+    E["Simulation Engine - des_hems.py"] -- Needs Random Value --> D;
+    D -- Looks up Distribution & Samples --> F["Realistic Random Value e.g., 11.5 min"];
+    E -- Uses Value --> G("Simulation Progresses");
 ```
 
-**Conclusion**
+## Conclusion
 
 Stochastic modeling, using statistical distributions, is essential for making the DAA_DES simulation realistic. Instead of using fixed, unrealistic numbers, the simulation samples values from distributions that are carefully chosen based on historical data. This ensures that factors like call arrival times, activity durations, and patient details vary randomly but follow patterns observed in the real world.
 

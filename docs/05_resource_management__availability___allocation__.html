@@ -218,7 +218,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#chapter-5-resource-management-availability-allocation" id="toc-chapter-5-resource-management-availability-allocation" class="nav-link active" data-scroll-target="#chapter-5-resource-management-availability-allocation">Chapter 5: Resource Management (Availability &amp; Allocation)</a></li>
+  <li><a href="#chapter-5-resource-management-availability-allocation" id="toc-chapter-5-resource-management-availability-allocation" class="nav-link active" data-scroll-target="#chapter-5-resource-management-availability-allocation">Chapter 5: Resource Management (Availability &amp; Allocation)</a>
+  <ul class="collapse">
+  <li><a href="#what-problem-does-this-solve" id="toc-what-problem-does-this-solve" class="nav-link" data-scroll-target="#what-problem-does-this-solve">What Problem Does This Solve?</a></li>
+  <li><a href="#meet-the-dispatch-center-key-roles" id="toc-meet-the-dispatch-center-key-roles" class="nav-link" data-scroll-target="#meet-the-dispatch-center-key-roles">Meet the Dispatch Center: Key Roles</a></li>
+  <li><a href="#how-the-simulation-engine-uses-resource-management" id="toc-how-the-simulation-engine-uses-resource-management" class="nav-link" data-scroll-target="#how-the-simulation-engine-uses-resource-management">How the Simulation Engine Uses Resource Management</a></li>
+  <li><a href="#explanation" id="toc-explanation" class="nav-link" data-scroll-target="#explanation">Explanation:</a></li>
+  <li><a href="#under-the-hood-the-dispatchers-logic-hemsavailability-class" id="toc-under-the-hood-the-dispatchers-logic-hemsavailability-class" class="nav-link" data-scroll-target="#under-the-hood-the-dispatchers-logic-hemsavailability-class">Under the Hood: The Dispatcher’s Logic (<code>HEMSAvailability</code> class)</a>
+  <ul class="collapse">
+  <li><a href="#initialization-and-resource-pool" id="toc-initialization-and-resource-pool" class="nav-link" data-scroll-target="#initialization-and-resource-pool">1. Initialization and Resource Pool:</a></li>
+  <li><a href="#checking-availability-and-preference-preferred_resource_available" id="toc-checking-availability-and-preference-preferred_resource_available" class="nav-link" data-scroll-target="#checking-availability-and-preference-preferred_resource_available">2. Checking Availability and Preference (<code>preferred_resource_available</code>):</a></li>
+  <li><a href="#allocating-the-resource-allocate_resource" id="toc-allocating-the-resource-allocate_resource" class="nav-link" data-scroll-target="#allocating-the-resource-allocate_resource">3. Allocating the Resource (<code>allocate_resource</code>):</a></li>
+  <li><a href="#releasing-the-resource-return_resource" id="toc-releasing-the-resource-return_resource" class="nav-link" data-scroll-target="#releasing-the-resource-return_resource">4. Releasing the Resource (<code>return_resource</code>):</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -232,7 +246,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>Chapter 5: Resource Management (Availability &amp; Allocation)</h1>
 <p>In <a href="./04_hems_resource_entity_.html">Chapter 4: HEMS Resource Entity</a>, we learned about the digital profiles representing each helicopter and car in the simulation – the “players” on our team. But how does the simulation decide which player to send when an emergency call comes in? And how does it know if they are even available?</p>
 <p>That’s where <strong>Resource Management</strong> comes in. Think of this part of the simulation as the <strong>Dispatch Center</strong> or the <strong>Air Traffic Controller</strong> for our HEMS (Helicopter Emergency Medical Service) units. It keeps track of every resource, knows who is working, who is busy, and who is best suited for the next job.</p>
-<p><strong>What Problem Does This Solve?</strong></p>
+<section id="what-problem-does-this-solve" class="level2">
+<h2 class="anchored" data-anchor-id="what-problem-does-this-solve">What Problem Does This Solve?</h2>
 <p>Imagine a 999 call comes in: a serious accident requiring Critical Care (CC). The DAA has several resources: a CC helicopter (H70), an EC (Emergency Care) helicopter (H71), and a CC car (CC72).</p>
 <ul>
 <li>Which one <em>should</em> go? (Probably the CC helicopter, H70, is preferred).</li>
@@ -242,7 +257,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>If H70 isn’t available, what’s the next best option? (Maybe the CC car, CC72?).</li>
 </ul>
 <p>Without a central system managing this, the simulation would be chaos! Resources might get double-booked, or the wrong type of help might be sent. The Resource Management system solves this by acting as the central coordinator for all HEMS resources.</p>
-<p><strong>Meet the Dispatch Center: Key Roles</strong></p>
+</section>
+<section id="meet-the-dispatch-center-key-roles" class="level2">
+<h2 class="anchored" data-anchor-id="meet-the-dispatch-center-key-roles">Meet the Dispatch Center: Key Roles</h2>
 <p>The Resource Management system, primarily implemented in the <code>class_hems_availability.py</code> file, acts like a dispatcher with a real-time status board. Its main jobs are:</p>
 <ol type="1">
 <li><strong>Tracking Availability:</strong> It constantly knows the status of each <a href="./04_hems_resource_entity_.html">HEMS Resource Entity</a>.
@@ -264,7 +281,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Handling Unavailability:</strong> If the <em>preferred</em> resource isn’t available, it checks the next best option according to the hierarchy. If <em>no</em> suitable resource is available at all, it records that HEMS could not respond.</li>
 <li><strong>Release:</strong> Once a resource finishes its task (e.g., patient delivered to hospital, returned to base), the system marks it as available again (<code>in_use = False</code>) so it can be dispatched to the next call.</li>
 </ol>
-<p><strong>How the Simulation Engine Uses Resource Management</strong></p>
+</section>
+<section id="how-the-simulation-engine-uses-resource-management" class="level2">
+<h2 class="anchored" data-anchor-id="how-the-simulation-engine-uses-resource-management">How the Simulation Engine Uses Resource Management</h2>
 <p>Remember the <a href="./02_simulation_engine__patient_journey__.html">Simulation Engine (Patient Journey)</a>? When it creates a new patient, it needs to ask the Resource Management system if help is available.</p>
 <p>This happens inside the <code>generate_patient</code> function in <code>des_hems.py</code>:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In des_hems.py (simplified 'generate_patient' function)</span></span>
@@ -297,7 +316,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="va">self</span>.add_patient_result_row(pt, <span class="st">"No HEMS available"</span>, <span class="st">"queue"</span>)</span>
 <span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># The patient journey might proceed differently (e.g., handled by land ambulance only)</span></span>
 <span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>    <span class="co"># In this simplified example, we might just end their journey here.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Explanation:</strong></p>
+</section>
+<section id="explanation" class="level2">
+<h2 class="anchored" data-anchor-id="explanation">Explanation:</h2>
 <ol type="1">
 <li>The code first determines if the patient needs ‘REG’ care or higher (‘CC’/‘EC’).</li>
 <li>It then calls the appropriate function from the <code>self.hems_resources</code> object (which is an instance of the <code>HEMSAvailability</code> class from <code>class_hems_availability.py</code>). It passes the <code>pt</code> (Patient Entity) object, which contains the patient’s needs.</li>
@@ -309,9 +330,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul></li>
 <li>The code then proceeds based on whether a resource was allocated or not.</li>
 </ol>
-<p><strong>Under the Hood: The Dispatcher’s Logic (<code>HEMSAvailability</code> class)</strong></p>
+</section>
+<section id="under-the-hood-the-dispatchers-logic-hemsavailability-class" class="level2">
+<h2 class="anchored" data-anchor-id="under-the-hood-the-dispatchers-logic-hemsavailability-class">Under the Hood: The Dispatcher’s Logic (<code>HEMSAvailability</code> class)</h2>
 <p>Let’s peek inside the <code>class_hems_availability.py</code> file, where the <code>HEMSAvailability</code> class lives. This class manages the pool of resources.</p>
-<p><strong>1. Initialization and Resource Pool:</strong> When the simulation starts, <code>HEMSAvailability</code> reads the resource details (from files like <code>HEMS_ROTA.csv</code>) and creates a <a href="./04_hems_resource_entity_.html">HEMS Resource Entity</a> object for each one. It also calculates their maintenance schedules. These objects are stored in a special container called a <code>simpy.FilterStore</code>. Think of this store as the dispatcher’s cabinet holding all the resource files.</p>
+<section id="initialization-and-resource-pool" class="level3">
+<h3 class="anchored" data-anchor-id="initialization-and-resource-pool">1. Initialization and Resource Pool:</h3>
+<p>When the simulation starts, <code>HEMSAvailability</code> reads the resource details (from files like <code>HEMS_ROTA.csv</code>) and creates a <a href="./04_hems_resource_entity_.html">HEMS Resource Entity</a> object for each one. It also calculates their maintenance schedules. These objects are stored in a special container called a <code>simpy.FilterStore</code>. Think of this store as the dispatcher’s cabinet holding all the resource files.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In class_hems_availability.py (Simplified __init__ and prep_HEMS_resources)</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> simpy</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -359,7 +384,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Put each created HEMS object into the SimPy store</span></span>
 <span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> h <span class="kw">in</span> <span class="va">self</span>.HEMS_resources_list:</span>
 <span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>            <span class="va">self</span>.store.put(h)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>2. Checking Availability and Preference (<code>preferred_resource_available</code>):</strong> This is the core logic for finding the best match. It loops through the resources in the <code>store</code> and checks their status and capabilities against the patient’s needs.</p>
+</section>
+<section id="checking-availability-and-preference-preferred_resource_available" class="level3">
+<h3 class="anchored" data-anchor-id="checking-availability-and-preference-preferred_resource_available">2. Checking Availability and Preference (<code>preferred_resource_available</code>):</h3>
+<p>This is the core logic for finding the best match. It loops through the resources in the <code>store</code> and checks their status and capabilities against the patient’s needs.</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In class_hems_availability.py (Simplified preferred_resource_available for CC/EC)</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> preferred_resource_available(<span class="va">self</span>, pt: Patient) <span class="op">-&gt;</span> <span class="bu">list</span>:</span>
@@ -415,7 +443,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> [hems, <span class="va">self</span>.resource_allocation_lookup(preferred_lookup)]</span>
 <span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
 <span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> [<span class="va">None</span>, <span class="va">self</span>.resource_allocation_lookup(<span class="dv">0</span>)] <span class="co"># Code 0 = No resource available</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>3. Allocating the Resource (<code>allocate_resource</code>):</strong> Once the preferred available resource is identified, this function attempts to “take” it from the store and mark it as busy. It uses SimPy’s <code>store.get()</code> mechanism.</p>
+</section>
+<section id="allocating-the-resource-allocate_resource" class="level3">
+<h3 class="anchored" data-anchor-id="allocating-the-resource-allocate_resource">3. Allocating the Resource (<code>allocate_resource</code>):</h3>
+<p>Once the preferred available resource is identified, this function attempts to “take” it from the store and mark it as busy. It uses SimPy’s <code>store.get()</code> mechanism.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In class_hems_availability.py (Simplified allocate_resource for CC/EC)</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> allocate_resource(<span class="va">self</span>, pt: Patient):</span>
@@ -460,7 +491,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.env.process(process()) <span class="co"># Start the allocation process</span></span>
 <span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> resource_event <span class="co"># Return the event that will eventually hold the result</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>4. Releasing the Resource (<code>return_resource</code>):</strong> When the <code>patient_journey</code> function in <code>des_hems.py</code> finishes, it calls this function to put the resource back into the available pool.</p>
+</section>
+<section id="releasing-the-resource-return_resource" class="level3">
+<h3 class="anchored" data-anchor-id="releasing-the-resource-return_resource">4. Releasing the Resource (<code>return_resource</code>):</h3>
+<p>When the <code>patient_journey</code> function in <code>des_hems.py</code> finishes, it calls this function to put the resource back into the available pool.</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In class_hems_availability.py (Simplified return_resource)</span></span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> return_resource(<span class="va">self</span>, resource: HEMS, secondary_resource: HEMS <span class="op">|</span> <span class="va">None</span>):</span>
@@ -512,7 +546,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p><strong>Conclusion</strong></p>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>The Resource Management system (<code>HEMSAvailability</code>) is the crucial dispatch center of our simulation. It maintains a real-time view of all <a href="./04_hems_resource_entity_.html">HEMS Resource Entities</a>, checking if they are on shift, free, and not under maintenance. When a <a href="./03_patient_entity_.html">Patient Entity</a> needs help, it uses a defined hierarchy to select the <em>preferred</em> available resource, allocates it, and ensures it’s properly released afterwards. This prevents conflicts and ensures the simulation realistically models how resources are assigned based on availability and operational rules.</p>
 <p>But how does the simulation decide <em>how long</em> each step takes (like mobilisation time or time on scene)? And how does it determine patient characteristics like age or the type of emergency? These aren’t fixed numbers; they involve randomness and probability. That’s what we’ll explore next.</p>
 <p><strong>Next:</strong> <a href="./06_stochastic_modeling__distributions__.html">Chapter 6: Stochastic Modeling (Distributions)</a></p>
@@ -520,6 +557,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Generated by <a href="https://github.com/The-Pocket/Tutorial-Codebase-Knowledge">AI Codebase Knowledge Builder</a></p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

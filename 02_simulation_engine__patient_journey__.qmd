@@ -4,13 +4,13 @@ In [Chapter 1: Web Application Interface (Streamlit)](01_web_application_interfa
 
 This chapter introduces the **Simulation Engine**, the heart of our simulation. Think of it as the **director of a play**. The play is the Devon Air Ambulance service operating over a period (like a year). The actors are the individual patient cases that arise. The Simulation Engine directs each patient actor through their scenes (the stages of their interaction with the service), making sure everything happens in the right order and according to the rules.
 
-**What Problem Does This Solve?**
+## What Problem Does This Solve?
 
 Imagine trying to manually figure out the entire sequence of events for thousands of potential emergency calls over a year. When does a call come in? Is a helicopter needed? Is one available? How long does it take to get ready, fly to the scene, treat the patient, fly to the hospital, and become ready again? This is incredibly complex!
 
 The Simulation Engine automates this entire process. It manages the flow of time and events within the simulated world, allowing us to model the complex interactions between calls, resources, and patient outcomes.
 
-**The Director's Script: Key Roles of the Engine**
+## The Director's Script: Key Roles of the Engine
 
 The Simulation Engine, primarily implemented in the `des_hems.py` file, handles several crucial tasks:
 
@@ -26,7 +26,7 @@ The Simulation Engine, primarily implemented in the `des_hems.py` file, handles 
     *   **Clear:** Time taken to become available for the next call (e.g., returning to base, refuelling).
 5.  **Recording Events:** Throughout this journey, the engine logs every important event and timestamp. This data is crucial for later analysis ([Results Processing & Visualization](08_results_processing___visualization_.qmd)).
 
-**A Patient's Journey: An Example**
+## A Patient's Journey: An Example
 
 Let's follow a simplified journey directed by the Simulation Engine:
 
@@ -131,7 +131,7 @@ The core logic resides mainly in `des_hems.py`. We use a Python library called `
     ```
     Again, `yield self.env.timeout(...)` makes the simulation clock move forward. The `self.add_patient_result_row(...)` function logs what happened and when, building up the data needed for [Results Processing & Visualization](08_results_processing___visualization_.qmd). The `finally` block ensures the resource is always returned.
 
-**How it Fits Together**
+## How it Fits Together
 
 Here's a simplified diagram showing the main interactions when a new call arrives:
 
@@ -165,7 +165,7 @@ sequenceDiagram
 
 The Simulation Engine (`des_hems.py` containing `generate_calls`, `generate_patient`, `patient_journey`) acts as the central orchestrator. It creates patients, interacts with the resource management system, and steps through the time-based events of each patient's journey, using data structures like the [Patient Entity](03_patient_entity_.qmd) and rules defined in [Resource Management (Availability & Allocation)](05_resource_management__availability___allocation__.qmd).
 
-**Conclusion**
+## Conclusion
 
 The Simulation Engine is the core logic that drives the DAA_DES simulation. It acts like a director, generating patient calls based on realistic patterns and guiding each patient (and the assigned HEMS resource) through the stages of their journey – from the initial call, through mobilisation, scene arrival, treatment, and finally becoming clear. It manages simulation time and ensures events happen in the correct sequence, using probabilistic timings defined in [Stochastic Modeling (Distributions)](06_stochastic_modeling__distributions__.qmd). This engine allows us to model the complex, dynamic behaviour of the HEMS system.
 

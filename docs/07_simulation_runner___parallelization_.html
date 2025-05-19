@@ -218,7 +218,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#chapter-7-simulation-runner-parallelization" id="toc-chapter-7-simulation-runner-parallelization" class="nav-link active" data-scroll-target="#chapter-7-simulation-runner-parallelization">Chapter 7: Simulation Runner &amp; Parallelization</a></li>
+  <li><a href="#chapter-7-simulation-runner-parallelization" id="toc-chapter-7-simulation-runner-parallelization" class="nav-link active" data-scroll-target="#chapter-7-simulation-runner-parallelization">Chapter 7: Simulation Runner &amp; Parallelization</a>
+  <ul class="collapse">
+  <li><a href="#what-problem-does-this-solve" id="toc-what-problem-does-this-solve" class="nav-link" data-scroll-target="#what-problem-does-this-solve">What Problem Does This Solve?</a></li>
+  <li><a href="#how-you-use-it-via-the-web-app" id="toc-how-you-use-it-via-the-web-app" class="nav-link" data-scroll-target="#how-you-use-it-via-the-web-app">How You Use It (via the Web App)</a></li>
+  <li><a href="#explanation" id="toc-explanation" class="nav-link" data-scroll-target="#explanation">Explanation:</a></li>
+  <li><a href="#under-the-hood-how-parallel-runs-work" id="toc-under-the-hood-how-parallel-runs-work" class="nav-link" data-scroll-target="#under-the-hood-how-parallel-runs-work">Under the Hood: How Parallel Runs Work</a></li>
+  <li><a href="#simplified-diagram" id="toc-simplified-diagram" class="nav-link" data-scroll-target="#simplified-diagram">Simplified Diagram:</a></li>
+  <li><a href="#code-glimpses-des_parallel_process.py" id="toc-code-glimpses-des_parallel_process.py" class="nav-link" data-scroll-target="#code-glimpses-des_parallel_process.py">Code Glimpses (<code>des_parallel_process.py</code>)</a>
+  <ul class="collapse">
+  <li><a href="#runsim-executes-a-single-simulation-replication." id="toc-runsim-executes-a-single-simulation-replication." class="nav-link" data-scroll-target="#runsim-executes-a-single-simulation-replication.">1. <strong><code>runSim</code>:</strong> Executes a single simulation replication.</a></li>
+  <li><a href="#parallelprocessjoblib-manages-running-runsim-multiple-times-in-parallel." id="toc-parallelprocessjoblib-manages-running-runsim-multiple-times-in-parallel." class="nav-link" data-scroll-target="#parallelprocessjoblib-manages-running-runsim-multiple-times-in-parallel.">2. <strong><code>parallelProcessJoblib</code>:</strong> Manages running <code>runSim</code> multiple times in parallel.</a></li>
+  <li><a href="#collaterunresults-gathers-the-results-from-the-temporary-files." id="toc-collaterunresults-gathers-the-results-from-the-temporary-files." class="nav-link" data-scroll-target="#collaterunresults-gathers-the-results-from-the-temporary-files.">3. <strong><code>collateRunResults</code>:</strong> Gathers the results from the temporary files.</a></li>
+  </ul></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -232,7 +246,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>Chapter 7: Simulation Runner &amp; Parallelization</h1>
 <p>In <a href="./06_stochastic_modeling__distributions__.html">Chapter 6: Stochastic Modeling (Distributions)</a>, we learned how the simulation uses randomness (like rolling dice based on real data) to make things like activity times and patient arrivals realistic. But because of this randomness, running the simulation just <em>once</em> might give us an unusual result – maybe by pure chance, things went really smoothly, or maybe everything went wrong!</p>
 <p>How can we be confident in the results? We need to run the simulation <em>many</em> times. But running a complex simulation hundreds of times could take hours or even days! This chapter introduces the <strong>Simulation Runner</strong>, the part of our project that handles actually executing the simulation, and its powerful feature: <strong>Parallelization</strong>, which helps us run multiple simulations much faster.</p>
-<p><strong>What Problem Does This Solve?</strong></p>
+<section id="what-problem-does-this-solve" class="level2">
+<h2 class="anchored" data-anchor-id="what-problem-does-this-solve">What Problem Does This Solve?</h2>
 <p>Imagine you want to test the effect of adding a new response car. You run the simulation once for one simulated year. The result shows an average response time of 15 minutes. Is that good? Bad? Lucky? Unlucky? You don’t know from a single run.</p>
 <p>To get a reliable answer, you need to run the simulation many times (say, 30 times) with the same settings. Each run is called a <strong>replication</strong>. By looking at the results across all 30 replications, you can calculate a trustworthy average response time and see how much it varied (the range of possible outcomes).</p>
 <p>But running 30 year-long simulations one after another would be very slow. This is where the Simulation Runner and Parallelization come in:</p>
@@ -250,7 +265,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Simulation Runner:</strong> The person (or program) responsible for setting up the board, playing the game according to the rules, and recording the score.</li>
 <li><strong>Parallelization:</strong> Instead of playing one game at a time, imagine having a room full of identical game boards and players. You tell them all to start playing simultaneously. If you have 4 sets of players, you can finish 4 games in the time it used to take to finish one! The Simulation Runner acts like the coordinator, starting all the games and collecting the scores when they’re done.</li>
 </ul>
-<p><strong>How You Use It (via the Web App)</strong></p>
+</section>
+<section id="how-you-use-it-via-the-web-app" class="level2">
+<h2 class="anchored" data-anchor-id="how-you-use-it-via-the-web-app">How You Use It (via the Web App)</h2>
 <p>You typically don’t interact with the Simulation Runner code directly. Instead, you use the controls provided in the <a href="./01_web_application_interface__streamlit__.html">Web Application Interface (Streamlit)</a>.</p>
 <p>Remember from Chapter 1, on the “Run Simulation” page (<code>app/model.py</code>), you have inputs like:</p>
 <ul>
@@ -287,7 +304,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>    st.success(<span class="st">"Simulation complete! View results below."</span>)</span>
 <span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Code to load results and display them follows...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p><strong>Explanation:</strong></p>
+</section>
+<section id="explanation" class="level2">
+<h2 class="anchored" data-anchor-id="explanation">Explanation:</h2>
 <ol type="1">
 <li>When the button is pressed, the code gets the <code>num_runs</code> value you selected.</li>
 <li>It calls <code>parallelProcessJoblib</code>, telling it how many runs to perform and passing the simulation settings. This function manages the parallel execution.</li>
@@ -296,7 +315,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>The Streamlit app then loads this final file to show you the combined results.</li>
 </ol>
 <p><strong>(Note:</strong> The code also includes logic to run simulations sequentially (<code>runSim</code> in a loop) if parallel processing isn’t available, like on some web hosting platforms.)</p>
-<p><strong>Under the Hood: How Parallel Runs Work</strong></p>
+</section>
+<section id="under-the-hood-how-parallel-runs-work" class="level2">
+<h2 class="anchored" data-anchor-id="under-the-hood-how-parallel-runs-work">Under the Hood: How Parallel Runs Work</h2>
 <p>Let’s trace what happens when you click “Run Simulation” for 4 replications on a computer with multiple cores:</p>
 <ol type="1">
 <li><strong>Trigger:</strong> The Streamlit app calls <code>parallelProcessJoblib(total_runs=4, ...)</code> in <code>des_parallel_process.py</code>.</li>
@@ -326,7 +347,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul></li>
 <li><strong>Results Display:</strong> The Streamlit app reads <code>data/run_results.csv</code> and displays the aggregated results and visualizations.</li>
 </ol>
-<p><strong>Simplified Diagram:</strong></p>
+</section>
+<section id="simplified-diagram" class="level2">
+<h2 class="anchored" data-anchor-id="simplified-diagram">Simplified Diagram:</h2>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
 <div>
@@ -361,10 +384,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p><strong>Code Glimpses (<code>des_parallel_process.py</code>)</strong></p>
+</section>
+<section id="code-glimpses-des_parallel_process.py" class="level2">
+<h2 class="anchored" data-anchor-id="code-glimpses-des_parallel_process.py">Code Glimpses (<code>des_parallel_process.py</code>)</h2>
 <p>Let’s look at the key functions involved:</p>
-<ol type="1">
-<li><p><strong><code>runSim</code>:</strong> Executes a single simulation replication.</p>
+<section id="runsim-executes-a-single-simulation-replication." class="level3">
+<h3 class="anchored" data-anchor-id="runsim-executes-a-single-simulation-replication.">1. <strong><code>runSim</code>:</strong> Executes a single simulation replication.</h3>
 <div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In des_parallel_process.py (Simplified)</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> time</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -396,8 +421,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    results_df.to_csv(output_filename, index<span class="op">=</span><span class="va">False</span>)</span>
 <span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="ss">f"Run </span><span class="sc">{</span>run<span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss"> finished in </span><span class="sc">{</span>time<span class="sc">.</span>process_time() <span class="op">-</span> start_time<span class="sc">:.2f}</span><span class="ss">s"</span>)</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># This function implicitly returns when done (or could return results_df)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
-<li><p><strong><code>parallelProcessJoblib</code>:</strong> Manages running <code>runSim</code> multiple times in parallel.</p>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>    <span class="co"># This function implicitly returns when done (or could return results_df)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="parallelprocessjoblib-manages-running-runsim-multiple-times-in-parallel." class="level3">
+<h3 class="anchored" data-anchor-id="parallelprocessjoblib-manages-running-runsim-multiple-times-in-parallel.">2. <strong><code>parallelProcessJoblib</code>:</strong> Manages running <code>runSim</code> multiple times in parallel.</h3>
 <div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In des_parallel_process.py (Simplified)</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> joblib <span class="im">import</span> Parallel, delayed</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> numpy.random <span class="im">import</span> SeedSequence <span class="co"># For generating good random seeds</span></span>
@@ -426,8 +453,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(total_runs) <span class="co"># Loop through the number of replications</span></span>
 <span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"All parallel runs completed."</span>)</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># This function finishes when all the 'delayed(runSim)' calls are done.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
-<li><p><strong><code>collateRunResults</code>:</strong> Gathers the results from the temporary files.</p>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># This function finishes when all the 'delayed(runSim)' calls are done.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="collaterunresults-gathers-the-results-from-the-temporary-files." class="level3">
+<h3 class="anchored" data-anchor-id="collaterunresults-gathers-the-results-from-the-temporary-files.">3. <strong><code>collateRunResults</code>:</strong> Gathers the results from the temporary files.</h3>
 <div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In des_parallel_process.py (Simplified)</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> glob <span class="co"># For finding files matching a pattern</span></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> os</span>
@@ -459,9 +488,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>    <span class="co"># 5. Clean up: Delete the temporary files</span></span>
 <span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> f <span class="kw">in</span> temp_files:</span>
 <span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>        os.remove(f)</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Temporary files removed."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div></li>
-</ol>
-<p><strong>Conclusion</strong></p>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"Temporary files removed."</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>The Simulation Runner is the mechanism that actually executes our simulation model. Because our model includes randomness (<a href="./06_stochastic_modeling__distributions__.html">Stochastic Modeling (Distributions)</a>), running it just once isn’t enough. The runner allows us to perform multiple <strong>replications</strong>.</p>
 <p>Crucially, it supports <strong>parallelization</strong>, using <code>joblib</code> to run many replications simultaneously on different CPU cores. This dramatically speeds up the process of gathering enough data for reliable analysis. Finally, helper functions like <code>collateRunResults</code> merge the outputs from all these parallel runs into a single, tidy dataset.</p>
 <p>Now that we have this combined dataset containing results from potentially many simulation runs, how do we make sense of it all? How do we calculate key metrics and create informative charts? That’s the focus of our final chapter.</p>
@@ -470,6 +501,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Generated by <a href="https://github.com/The-Pocket/Tutorial-Codebase-Knowledge">AI Codebase Knowledge Builder</a></p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

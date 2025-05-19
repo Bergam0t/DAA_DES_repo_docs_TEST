@@ -4,7 +4,7 @@ Welcome to the final chapter! In [Chapter 7: Simulation Runner & Parallelization
 
 But what do we *do* with this big file? It contains thousands, maybe millions, of rows detailing every little event that happened in every simulation run. Just looking at the raw data won't tell us much about overall performance or answer questions like "Did adding that extra car actually help?"
 
-**What Problem Does This Solve? The Need for Insights**
+## What Problem Does This Solve? The Need for Insights
 
 Imagine you're a manager who just received a massive spreadsheet listing every single sale made last year – every item, every customer, every timestamp. Useful data, perhaps, but overwhelming! What you really need is a report summarizing:
 
@@ -15,7 +15,7 @@ Imagine you're a manager who just received a massive spreadsheet listing every s
 
 Our simulation output (`run_results.csv`) is like that raw sales spreadsheet. The **Results Processing & Visualization** component acts like the **analytics department**. It takes this raw simulation log data and transforms it into meaningful insights. It calculates key performance indicators (KPIs), creates charts, and compares the simulation's output to historical data, presenting everything clearly in the [Web Application Interface (Streamlit)](01_web_application_interface__streamlit__.qmd).
 
-**From Raw Data to Clear Results: The Workflow**
+## From Raw Data to Clear Results: The Workflow
 
 This component performs several key tasks, mostly handled by Python scripts found in the `visualisation/` folder:
 
@@ -32,7 +32,7 @@ This component performs several key tasks, mostly handled by Python scripts foun
     *   **Plots:** Visual charts (e.g., line charts, bar charts, box plots) created using libraries like `plotly`.
 5.  **Display:** These generated KPIs, tables, and plots are then passed back to the Streamlit application (`app/model.py`), which uses functions like `st.metric`, `st.dataframe`, and `st.plotly_chart` to display them neatly in the web interface tabs.
 
-**Example 1: Calculating a KPI (Resource Utilization)**
+## Example 1: Calculating a KPI (Resource Utilization)
 
 Let's say we want to calculate the average utilization for the H70 helicopter across all simulation runs.
 
@@ -94,7 +94,7 @@ Let's say we want to calculate the average utilization for the H70 helicopter ac
     st.metric("Average Simulated H70 Utilisation", h70_util_fig)
     ```
 
-**Example 2: Generating a Visualization (Monthly Jobs Plot)**
+## Example 2: Generating a Visualization (Monthly Jobs Plot)
 
 Let's create a plot showing the average number of jobs per month in the simulation compared to historical data.
 
@@ -169,7 +169,7 @@ Let's create a plot showing the average number of jobs per month in the simulati
     st.plotly_chart(fig_monthly_calls)
     ```
 
-**Under the Hood: The Analysis Pipeline**
+## Under the Hood: The Analysis Pipeline
 
 When you click "Run Simulation" and it finishes, a sequence of processing steps leads to the results you see:
 
@@ -205,7 +205,7 @@ sequenceDiagram
 
 Essentially, the scripts in the `visualisation/` folder act as specialized calculators and chart generators. They take the raw simulation log, perform specific analyses using `pandas`, often incorporate historical data for context, and produce outputs (numbers, tables, `plotly` figures) that the main Streamlit application (`app/model.py`) can then easily display.
 
-**Conclusion**
+## Conclusion
 
 The Results Processing & Visualization component is the crucial final step that transforms the raw output of our complex simulation into understandable information. By calculating key metrics like resource utilization and job counts, comparing them against historical benchmarks, and generating clear plots and tables, it allows users to effectively interpret the simulation's findings directly within the [Web Application Interface (Streamlit)](01_web_application_interface__streamlit__.qmd). This enables informed decision-making based on the simulation scenarios tested.
 

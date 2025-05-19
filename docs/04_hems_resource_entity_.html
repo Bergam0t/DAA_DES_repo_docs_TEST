@@ -218,7 +218,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#chapter-4-hems-resource-entity" id="toc-chapter-4-hems-resource-entity" class="nav-link active" data-scroll-target="#chapter-4-hems-resource-entity">Chapter 4: HEMS Resource Entity</a></li>
+  <li><a href="#chapter-4-hems-resource-entity" id="toc-chapter-4-hems-resource-entity" class="nav-link active" data-scroll-target="#chapter-4-hems-resource-entity">Chapter 4: HEMS Resource Entity</a>
+  <ul class="collapse">
+  <li><a href="#what-problem-does-this-solve" id="toc-what-problem-does-this-solve" class="nav-link" data-scroll-target="#what-problem-does-this-solve">What Problem Does This Solve?</a></li>
+  <li><a href="#meet-the-hems-resource-entity-a-vehicles-profile" id="toc-meet-the-hems-resource-entity-a-vehicles-profile" class="nav-link" data-scroll-target="#meet-the-hems-resource-entity-a-vehicles-profile">Meet the HEMS Resource Entity: A Vehicle’s Profile</a></li>
+  <li><a href="#what-information-does-a-resource-entity-hold-its-attributes" id="toc-what-information-does-a-resource-entity-hold-its-attributes" class="nav-link" data-scroll-target="#what-information-does-a-resource-entity-hold-its-attributes">What Information Does a Resource Entity Hold? (Its Attributes)</a></li>
+  <li><a href="#how-the-simulation-uses-resource-entities" id="toc-how-the-simulation-uses-resource-entities" class="nav-link" data-scroll-target="#how-the-simulation-uses-resource-entities">How the Simulation Uses Resource Entities</a></li>
+  <li><a href="#under-the-hood-the-hems-class" id="toc-under-the-hood-the-hems-class" class="nav-link" data-scroll-target="#under-the-hood-the-hems-class">Under the Hood: The <code>HEMS</code> Class</a></li>
+  <li><a href="#creating-the-resources" id="toc-creating-the-resources" class="nav-link" data-scroll-target="#creating-the-resources">Creating the Resources</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -232,13 +241,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>Chapter 4: HEMS Resource Entity</h1>
 <p>In <a href="./03_patient_entity_.html">Chapter 3: Patient Entity</a>, we met the “actors” in our simulation – the digital representations of individual emergency cases. But who comes to help these patients? We need the emergency response units themselves!</p>
 <p>This chapter introduces the <strong>HEMS Resource Entity</strong>. Think back to a city management game where you have fire trucks, police cars, and ambulances. Each vehicle is a distinct unit with its own capabilities, schedule, and status (available, busy, or in the garage). Our HEMS Resource Entity is just like that – it’s the digital version of a specific Devon Air Ambulance helicopter or response car.</p>
-<p><strong>What Problem Does This Solve?</strong></p>
+<section id="what-problem-does-this-solve" class="level2">
+<h2 class="anchored" data-anchor-id="what-problem-does-this-solve">What Problem Does This Solve?</h2>
 <p>Imagine trying to run the simulation without knowing which helicopters or cars are available. How would we know if the <em>right kind</em> of help (e.g., a Critical Care team) is working at 2 AM? How would we know if Helicopter ‘H70’ is already busy helping another patient or if it’s grounded for maintenance?</p>
 <p>We need a way to represent each operational unit individually, tracking its specific details and whether it’s ready to respond. The <strong>HEMS Resource Entity</strong> solves this by acting as a detailed profile for each vehicle in our simulated fleet.</p>
-<p><strong>Meet the HEMS Resource Entity: A Vehicle’s Profile</strong></p>
+</section>
+<section id="meet-the-hems-resource-entity-a-vehicles-profile" class="level2">
+<h2 class="anchored" data-anchor-id="meet-the-hems-resource-entity-a-vehicles-profile">Meet the HEMS Resource Entity: A Vehicle’s Profile</h2>
 <p>The HEMS Resource Entity is essentially a digital “character sheet” for each helicopter and car available to the service. When the simulation starts, it creates these profiles based on real-world information about the fleet.</p>
 <p>The <a href="./02_simulation_engine__patient_journey__.html">Simulation Engine (Patient Journey)</a> and, more specifically, the <a href="./05_resource_management__availability___allocation__.html">Resource Management (Availability &amp; Allocation)</a> system constantly consult these profiles to make decisions.</p>
-<p><strong>What Information Does a Resource Entity Hold? (Its Attributes)</strong></p>
+</section>
+<section id="what-information-does-a-resource-entity-hold-its-attributes" class="level2">
+<h2 class="anchored" data-anchor-id="what-information-does-a-resource-entity-hold-its-attributes">What Information Does a Resource Entity Hold? (Its Attributes)</h2>
 <p>Each HEMS Resource Entity “profile” stores key details:</p>
 <ol type="1">
 <li><strong>Callsign (<code>callsign</code>):</strong> A unique name for the resource, like “H70” (for a helicopter) or “CC72” (for a Critical Care car). Think of it as the vehicle’s radio name.</li>
@@ -280,7 +294,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<p><strong>How the Simulation Uses Resource Entities</strong></p>
+</section>
+<section id="how-the-simulation-uses-resource-entities" class="level2">
+<h2 class="anchored" data-anchor-id="how-the-simulation-uses-resource-entities">How the Simulation Uses Resource Entities</h2>
 <p>The <a href="./05_resource_management__availability___allocation__.html">Resource Management (Availability &amp; Allocation)</a> system is the main user of these entities. When a <a href="./03_patient_entity_.html">Patient Entity</a> needs help:</p>
 <ol type="1">
 <li><strong>Filtering:</strong> Resource Management looks through all the available HEMS Resource Entities.</li>
@@ -294,7 +310,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </ul></li>
 <li><strong>Release:</strong> Once the resource finishes its task (e.g., patient handed over, returned to base), Resource Management sets its <code>in_use</code> status back to <code>False</code>, making it available again.</li>
 </ol>
-<p><strong>Under the Hood: The <code>HEMS</code> Class</strong></p>
+</section>
+<section id="under-the-hood-the-hems-class" class="level2">
+<h2 class="anchored" data-anchor-id="under-the-hood-the-hems-class">Under the Hood: The <code>HEMS</code> Class</h2>
 <p>The blueprint for creating these resource profiles is defined in a Python file called <code>class_hems.py</code>. It contains a <code>class</code> named <code>HEMS</code>. Remember, a class is like a template.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In class_hems.py (Simplified Structure)</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -356,7 +374,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong><code>hems_resource_on_shift(...)</code>:</strong> This is a function <em>belonging</em> to the HEMS object. Given the current hour and season (quarter of the year), it checks the object’s own rota times (<code>self.summer_start</code>, etc.) to see if it should be working.</li>
 <li><strong><code>unavailable_due_to_service(...)</code>:</strong> This function checks the object’s <code>servicing_schedule</code> (which was calculated and stored when the object was created) against the current simulation date and time (<code>current_dt</code>) to see if it’s in the garage for maintenance. It also updates the <code>self.being_serviced</code> flag.</li>
 </ul>
-<p><strong>Creating the Resources</strong></p>
+</section>
+<section id="creating-the-resources" class="level2">
+<h2 class="anchored" data-anchor-id="creating-the-resources">Creating the Resources</h2>
 <p>These <code>HEMS</code> objects aren’t created one by one in the main simulation logic. Instead, they are typically prepared at the start by the <a href="./05_resource_management__availability___allocation__.html">Resource Management (Availability &amp; Allocation)</a> system, specifically within the <code>HEMSAvailability</code> class in <code>class_hems_availability.py</code>.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In class_hems_availability.py (Simplified concept from prep_HEMS_resources)</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -386,7 +406,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co"># for h in self.HEMS_resources_list:</span></span>
 <span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="co">#    self.store.put(h)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>This setup code reads configuration files (like <code>actual_data/HEMS_ROTA.csv</code> which defines the callsigns, types, and rotas) and uses the <code>HEMS</code> class as a template to create an object for each resource listed. It also calculates and attaches the specific maintenance schedule (<code>servicing_schedule</code>) to each object.</p>
-<p><strong>Conclusion</strong></p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>The HEMS Resource Entity is the digital twin of a specific helicopter or car in the simulation. It bundles together all the essential information: its name (callsign), type, medical capability, working hours (rota), and unique registration. Crucially, it also holds information about its current status – whether it’s busy (<code>in_use</code>) or out for maintenance (<code>being_serviced</code>).</p>
 <p>These resource entities are the fundamental building blocks that the simulation uses to represent the available fleet. Understanding them is key to grasping how the system checks for availability and assigns the right help to patients.</p>
 <p>In the next chapter, we’ll see exactly how the simulation manages these resources – deciding which one to pick when multiple are available, and how it handles situations when no suitable resource is free.</p>
@@ -395,6 +417,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Generated by <a href="https://github.com/The-Pocket/Tutorial-Codebase-Knowledge">AI Codebase Knowledge Builder</a></p>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

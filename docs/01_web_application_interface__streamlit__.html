@@ -218,22 +218,41 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#chapter-1-web-application-interface-streamlit" id="toc-chapter-1-web-application-interface-streamlit" class="nav-link active" data-scroll-target="#chapter-1-web-application-interface-streamlit">Chapter 1: Web Application Interface (Streamlit)</a></li>
+  <li><a href="#what-problem-does-this-solve" id="toc-what-problem-does-this-solve" class="nav-link active" data-scroll-target="#what-problem-does-this-solve">What Problem Does This Solve?</a></li>
+  <li><a href="#meet-streamlit-your-simulation-control-panel" id="toc-meet-streamlit-your-simulation-control-panel" class="nav-link" data-scroll-target="#meet-streamlit-your-simulation-control-panel">Meet Streamlit: Your Simulation Control Panel</a></li>
+  <li><a href="#using-the-interface-a-quick-tour" id="toc-using-the-interface-a-quick-tour" class="nav-link" data-scroll-target="#using-the-interface-a-quick-tour">Using the Interface: A Quick Tour</a></li>
+  <li><a href="#under-the-hood-how-streamlit-connects-everything" id="toc-under-the-hood-how-streamlit-connects-everything" class="nav-link" data-scroll-target="#under-the-hood-how-streamlit-connects-everything">Under the Hood: How Streamlit Connects Everything</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_web_application_interface__streamlit__.html">Components</a></li><li class="breadcrumb-item"><a href="./01_web_application_interface__streamlit__.html">Chapter 1: Web Application Interface (Streamlit)</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./01_web_application_interface__streamlit__.html">Components</a></li><li class="breadcrumb-item"><a href="./01_web_application_interface__streamlit__.html">Chapter 1: Web Application Interface (Streamlit)</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Chapter 1: Web Application Interface (Streamlit)</h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
 
-<section id="chapter-1-web-application-interface-streamlit" class="level1">
-<h1>Chapter 1: Web Application Interface (Streamlit)</h1>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
 <p>Welcome to the Devon Air Ambulance Discrete Event Simulation (DAA_DES) project! This project simulates how the Devon Air Ambulance service responds to calls. It’s a complex system, but we want everyone, even those who aren’t programmers, to be able to use it and understand its results.</p>
 <p>Imagine you’re a manager at the air ambulance service. You might wonder, “What happens if we add an extra response car? Or change the helicopter shift times?” Answering these questions usually requires deep knowledge of the simulation code. That’s where our Web Application Interface comes in!</p>
 <p>This chapter introduces the user-friendly interface built with a tool called <strong>Streamlit</strong>. Think of it as the <strong>dashboard and control panel</strong> for our simulation. It hides all the complicated Python code (the “engine”) and gives you simple controls like buttons, sliders, and text boxes to configure and run the simulation. It also displays the results clearly using charts and key numbers.</p>
-<p><strong>What Problem Does This Solve?</strong></p>
+<section id="what-problem-does-this-solve" class="level2">
+<h2 class="anchored" data-anchor-id="what-problem-does-this-solve">What Problem Does This Solve?</h2>
 <p>Without a graphical interface, users would need to:</p>
 <ol type="1">
 <li>Open the Python code files.</li>
@@ -243,7 +262,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Manually process the raw output data (often large CSV files) to create charts or calculate metrics.</li>
 </ol>
 <p>This is time-consuming and requires programming skills. The Streamlit interface solves this by providing an easy-to-use web application accessible through your browser.</p>
-<p><strong>Meet Streamlit: Your Simulation Control Panel</strong></p>
+</section>
+<section id="meet-streamlit-your-simulation-control-panel" class="level2">
+<h2 class="anchored" data-anchor-id="meet-streamlit-your-simulation-control-panel">Meet Streamlit: Your Simulation Control Panel</h2>
 <p>Streamlit is a Python library that makes it incredibly easy to create web applications for data science and machine learning projects. For DAA_DES, we use it to build the interactive layer <em>on top</em> of the core simulation model.</p>
 <p>Here’s what the interface allows you to do:</p>
 <ol type="1">
@@ -263,10 +284,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>Comparisons with historical data.</li>
 </ul></li>
 </ol>
-<p><strong>Using the Interface: A Quick Tour</strong></p>
+</section>
+<section id="using-the-interface-a-quick-tour" class="level2">
+<h2 class="anchored" data-anchor-id="using-the-interface-a-quick-tour">Using the Interface: A Quick Tour</h2>
 <p>Getting the simulation running via the interface is straightforward:</p>
 <ol type="1">
-<li><p><strong>Start the App:</strong> Open your terminal or command prompt, navigate to the project’s root directory, and type: <code>bash     streamlit run app/app.py</code> This command tells Streamlit to run the main application file (<code>app.py</code>), which will then open a new tab in your web browser.</p></li>
+<li><p><strong>Start the App:</strong> Open your terminal or command prompt, navigate to the project’s root directory, and type: <code>ksdhtk     streamlit run app/app.py</code> This command tells Streamlit to run the main application file (<code>app.py</code>), which will then open a new tab in your web browser.</p></li>
 <li><p><strong>Setup Parameters:</strong> Navigate to the “Choose Model Parameters” page (controlled by <code>app/setup.py</code>). Here you’ll find widgets like sliders and number inputs.</p>
 <p><em>Example: Setting the simulation duration using a slider in <code>app/setup.py</code> (simplified):</em></p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># In app/setup.py (simplified)</span></span>
@@ -343,7 +366,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co"># st.plotly_chart(fig)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>This uses Streamlit’s built-in functions (<code>st.metric</code>, <code>st.plotly_chart</code>) to present the simulation output in an easy-to-understand format.</p></li>
 </ol>
-<p><strong>Under the Hood: How Streamlit Connects Everything</strong></p>
+</section>
+<section id="under-the-hood-how-streamlit-connects-everything" class="level2">
+<h2 class="anchored" data-anchor-id="under-the-hood-how-streamlit-connects-everything">Under the Hood: How Streamlit Connects Everything</h2>
 <p>While you interact with the simple web page, Streamlit coordinates several actions behind the scenes when you click “Run Simulation”:</p>
 <ol type="1">
 <li><strong>Input Gathering:</strong> Streamlit reads the current values from all the widgets (sliders, number inputs, etc.) you configured on the <code>setup.py</code> page. These values are stored in Streamlit’s session state.</li>
@@ -382,7 +407,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>The key takeaway is that the Streamlit code in the <code>app/</code> folder acts as a bridge between you (the user) and the complex simulation engine running in the background.</p>
-<p><strong>Conclusion</strong></p>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
 <p>The Web Application Interface, built using Streamlit, is the friendly face of the DAA_DES project. It allows anyone to easily configure simulation parameters, run different scenarios, and visualize the results without needing to write or modify any Python code. It acts as the control panel, making the powerful simulation engine accessible.</p>
 <p>Now that you understand how to interact with the simulation through its interface, we’ll dive into the heart of the system in the next chapter. We’ll explore how the simulation actually models the journey of a patient from the initial call to the final outcome.</p>
 <p><strong>Next:</strong> <a href="./02_simulation_engine__patient_journey__.html">Chapter 2: Simulation Engine (Patient Journey)</a></p>
