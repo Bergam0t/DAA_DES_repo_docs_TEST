@@ -442,12 +442,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p></p><figure class="figure"><p></p>
 <div>
 <pre class="mermaid mermaid-js">graph LR
-    A["Historical Data - CSV"] --&gt; B("distribution_fit_utils.py");
-    B -- Analyzes Data --&gt; C{"Distribution Files distribution_data/"};
-    C -- Loaded at Start --&gt; D("Utils Class");
-    E["Simulation Engine - des_hems.py"] -- Needs Random Value --&gt; D;
-    D -- Looks up Distribution &amp; Samples --&gt; F["Realistic Random Value e.g., 11.5 min"];
-    E -- Uses Value --&gt; G("Simulation Progresses");
+    A["Historical Data - CSV"] --&gt; B["distribution_fit_utils.py"]
+    B -- Analyzes Data --&gt; C["Distribution Files&lt;br&gt;distribution_data/"]
+    C -- Loaded at Start --&gt; D["Utils Class"]
+    E["Simulation Engine des_hems.py"] -- Needs Random Value --&gt; D
+    D -- Looks up Distribution &amp; Samples --&gt; F["Realistic Random Value e.g., 11.5 min"]
+    E -- Uses Value --&gt; G["Simulation Progresses"]
 </pre>
 </div>
 <p></p></figure><p></p>

@@ -205,15 +205,16 @@ ul.task-list li input[type="checkbox"] {
 <div>
 <p></p><figure class="figure"><p></p>
 <div>
-<pre class="mermaid mermaid-js">flowchart TD
-    A0["Simulation Engine for Patient Journey"]
+<pre class="mermaid mermaid-js">%%{ init : { "themeVariables": { "fontSize": "14px" } } }%%
+flowchart TB
+    A0["Simulation Engine&lt;br&gt;for Patient Journey"]
     A1["Patient Entity"]
     A2["HEMS Resource Entity"]
-    A3["Resource Management - Availability and Allocation"]
-    A4["Simulation Runner and Parallelization"]
-    A5["Stochastic Modeling with Distributions"]
-    A6["Web Application Interface in Streamlit"]
-    A7["Results Processing and Visualization"]
+    A3["Resource Management&lt;br&gt;Availability and&lt;br&gt;Allocation"]
+    A4["Simulation Runner&lt;br&gt;and Parallelization"]
+    A5["Stochastic Modeling&lt;br&gt;with Distributions"]
+    A6["Web Application&lt;br&gt;Interface&lt;br&gt;in Streamlit"]
+    A7["Results Processing&lt;br&gt;and Visualization"]
     A0 -- "Generates &amp; Manages" --&gt; A1
     A0 -- "Requests Allocation" --&gt; A3
     A0 -- "Uses Timings/Distributions" --&gt; A5

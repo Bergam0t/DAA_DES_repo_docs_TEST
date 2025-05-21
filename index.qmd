@@ -8,15 +8,16 @@ The goal is to understand how resource changes impact performance metrics like r
 **Source Repository:** [https://github.com/RichardPilbery/DAA_DES](https://github.com/RichardPilbery/DAA_DES)
 
 ```{mermaid}
-flowchart TD
-    A0["Simulation Engine for Patient Journey"]
+%%{ init : { "themeVariables": { "fontSize": "14px" } } }%%
+flowchart TB
+    A0["Simulation Engine<br>for Patient Journey"]
     A1["Patient Entity"]
     A2["HEMS Resource Entity"]
-    A3["Resource Management - Availability and Allocation"]
-    A4["Simulation Runner and Parallelization"]
-    A5["Stochastic Modeling with Distributions"]
-    A6["Web Application Interface in Streamlit"]
-    A7["Results Processing and Visualization"]
+    A3["Resource Management<br>Availability and<br>Allocation"]
+    A4["Simulation Runner<br>and Parallelization"]
+    A5["Stochastic Modeling<br>with Distributions"]
+    A6["Web Application<br>Interface<br>in Streamlit"]
+    A7["Results Processing<br>and Visualization"]
     A0 -- "Generates & Manages" --> A1
     A0 -- "Requests Allocation" --> A3
     A0 -- "Uses Timings/Distributions" --> A5

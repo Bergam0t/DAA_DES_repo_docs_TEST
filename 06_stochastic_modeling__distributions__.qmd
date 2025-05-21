@@ -207,12 +207,12 @@ Here's how the pieces fit together:
 
 ```{mermaid}
 graph LR
-    A["Historical Data - CSV"] --> B("distribution_fit_utils.py");
-    B -- Analyzes Data --> C{"Distribution Files distribution_data/"};
-    C -- Loaded at Start --> D("Utils Class");
-    E["Simulation Engine - des_hems.py"] -- Needs Random Value --> D;
-    D -- Looks up Distribution & Samples --> F["Realistic Random Value e.g., 11.5 min"];
-    E -- Uses Value --> G("Simulation Progresses");
+    A["Historical Data - CSV"] --> B["distribution_fit_utils.py"]
+    B -- Analyzes Data --> C["Distribution Files<br>distribution_data/"]
+    C -- Loaded at Start --> D["Utils Class"]
+    E["Simulation Engine des_hems.py"] -- Needs Random Value --> D
+    D -- Looks up Distribution & Samples --> F["Realistic Random Value e.g., 11.5 min"]
+    E -- Uses Value --> G["Simulation Progresses"]
 ```
 
 ## Conclusion

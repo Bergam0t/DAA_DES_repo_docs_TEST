@@ -41,6 +41,7 @@ Here's what the interface allows you to do:
 Getting the simulation running via the interface is straightforward:
 
 1.  **Start the App:** Open your terminal or command prompt, navigate to the project's root directory, and type:
+
     ```{bash}
     streamlit run app/app.py
     ```
